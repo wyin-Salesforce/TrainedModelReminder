@@ -33,7 +33,7 @@ from tqdm import tqdm, trange
 
 from torch.nn import CrossEntropyLoss, MSELoss
 from scipy.special import softmax
-
+import logging
 
 
 
@@ -45,8 +45,10 @@ from load_data import store_transformers_models
 
 
 
-# from pytorch_transformers.modeling_bert import BertPreTrainedModel, BertModel
-# import torch.nn as nn
+logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                    datefmt = '%m/%d/%Y %H:%M:%S',
+                    level = logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 
