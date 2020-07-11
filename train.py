@@ -604,10 +604,13 @@ def main():
 
                 loss.backward()
 
+
                 optimizer.step()
                 optimizer.zero_grad()
                 global_step += 1
                 iter_co+=1
+                if iter_co % 500:
+                    print('loss........:', loss)
                 if iter_co % len(train_dataloader) ==0:
                     '''
                     start evaluate on MNLI dev set after this epoch
@@ -658,4 +661,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CUDA_VISIBLE_DEVICES=2 python -u train.py --task_name rte --do_lower_case --learning_rate 2e-5 --num_train_epochs 1
+# CUDA_VISIBLE_DEVICES=0,1,2 python -u train.py --task_name rte --do_lower_case --learning_rate 2e-5 --num_train_epochs 1 --train_batch_size 32
