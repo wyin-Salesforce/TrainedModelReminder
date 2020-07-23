@@ -175,7 +175,7 @@ class RteProcessor(DataProcessor):
         for filename in [train_filename, dev_filename]:
             examples=[]
             readfile = codecs.open(filename, 'r', 'utf-8')
-
+            line_co=0
             for row in readfile:
 
                 line=row.strip().split('\t')
