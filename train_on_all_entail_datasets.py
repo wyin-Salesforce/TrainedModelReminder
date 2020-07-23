@@ -136,7 +136,7 @@ class RteProcessor(DataProcessor):
                 # if line_co > 20000:
                 #     break
             readfile.close()
-            print('loaded  size:', line_co)
+            print('loaded  MNLI size:', len(examples))
             examples_per_file.append(examples)
         return examples_per_file[0], examples_per_file[1] #train, dev
 
@@ -163,7 +163,7 @@ class RteProcessor(DataProcessor):
                 # if line_co > 20000:
                 #     break
             readfile.close()
-            print('loaded  size:', line_co)
+            print('loaded  SNLI size:', len(examples))
             examples_per_file.append(examples)
         return examples_per_file[0], examples_per_file[1] #train, dev
 
@@ -192,7 +192,7 @@ class RteProcessor(DataProcessor):
                             InputExample(guid=guid, text_a=text_a, text_b=text_b, label='entailment', task_label=1))
 
             readfile.close()
-            print('loaded  size:', line_co)
+            print('loaded  SciTail size:', len(examples))
             examples_per_file.append(examples)
         return examples_per_file[0], examples_per_file[1] #train, dev
 
@@ -220,7 +220,7 @@ class RteProcessor(DataProcessor):
                             InputExample(guid=guid, text_a=text_a, text_b=text_b, label='entailment', task_label = 1))
                 line_co+=1
             readfile.close()
-            print('loaded  size:', line_co-1)
+            print('loaded  RTE size:', len(examples))
             examples_per_file.append(examples)
         return examples_per_file[0], examples_per_file[1] #train, dev
 
@@ -251,7 +251,6 @@ class RteProcessor(DataProcessor):
                             continue
                         examples.append(InputExample(guid=str(guid_id), text_a=premise, text_b=hypothesis, label=label, task_label = 0))
             print(prefix, ' ANLI size:', len(examples))
-            # print('type set:', labeltype_set)
             examples_per_file.append(examples)
         return examples_per_file[0], examples_per_file[1] #train, dev
 
