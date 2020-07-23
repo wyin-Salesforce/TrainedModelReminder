@@ -675,9 +675,9 @@ def main():
             optimizer.zero_grad()
             global_step += 1
             iter_co+=1
-            if iter_co % 500:
+            # if iter_co % 500:
                 # print('loss........:', loss)
-                # if iter_co % len(train_dataloader) ==0:
+            if iter_co % len(train_dataloader) ==0:
                 '''
                 start evaluate on  dev set after this epoch
                 '''
@@ -693,12 +693,14 @@ def main():
                     nb_eval_steps = 0
                     preds = []
                     gold_label_ids = []
-                    print('Evaluating...', task_label)
-                    for input_ids, input_mask, segment_ids, label_ids, task_label_ids in valid_dataloader:
-                        input_ids = input_ids.to(device)
-                        input_mask = input_mask.to(device)
-                        segment_ids = segment_ids.to(device)
-                        label_ids = label_ids.to(device)
+                    # print('Evaluating...', task_label)
+                    for _, batch in enumerate(tqdm(valid_dataloader, desc=task_label)):
+                        batch = tuple(t.to(device) for t in batch)
+                        input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
+                        # input_ids = input_ids.to(device)
+                        # input_mask = input_mask.to(device)
+                        # segment_ids = segment_ids.to(device)
+                        # label_ids = label_ids.to(device)
 
 
                         if task_label == 0:
@@ -739,8 +741,8 @@ def main():
                     test_acc = hit_co/len(gold_label_ids)
                     print(task_names[idd], ' dev acc:', test_acc)
 
-    # '''store the model, because we can test after a max_dev acc reached'''
-    # store_transformers_models(model, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', '->'.join(dataset_name_list[:dataset_id+1]))
+        '''store the model, because we can test after a max_dev acc reached'''
+        store_transformers_models(model, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI')
 
 
 
@@ -749,4 +751,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CUDA_VISIBLE_DEVICES=0 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --num_train_epochs 1 --train_batch_size 32 --eval_batch_size 64
+# CUDA_VISIBLE_DEVICES=0 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --num_train_epochs 5 --train_batch_size 32 --eval_batch_size 64
