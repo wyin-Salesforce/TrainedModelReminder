@@ -675,9 +675,9 @@ def main():
             optimizer.zero_grad()
             global_step += 1
             iter_co+=1
-            if iter_co % 500:
+            # if iter_co % 500:
                 # print('loss........:', loss)
-                # if iter_co % len(train_dataloader) ==0:
+            if iter_co % len(train_dataloader) ==0:
                 '''
                 start evaluate on  dev set after this epoch
                 '''
@@ -694,8 +694,8 @@ def main():
                     preds = []
                     gold_label_ids = []
                     # print('Evaluating...', task_label)
-                    for _, batch in enumerate(tqdm(valid_dataloader, desc=task_names[idd])):
-                        # for _, batch in enumerate(valid_dataloader):
+                    # for _, batch in enumerate(tqdm(valid_dataloader, desc=task_names[idd])):
+                    for _, batch in enumerate(valid_dataloader):
                         batch = tuple(t.to(device) for t in batch)
                         input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
                         # input_ids = input_ids.to(device)
