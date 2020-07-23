@@ -707,7 +707,7 @@ def main():
                         if task_label == 0:
                             gold_label_ids+=list(label_ids.detach().cpu().numpy())
                         else:
-                            task_label_ids_list = list(task_label_ids.numpy())
+                            task_label_ids_list = list(task_label_ids.detach().cpu().numpy())
                             gold_label_batch_fake = list(label_ids.detach().cpu().numpy())
                             for ex_id, label_id in enumerate(gold_label_batch_fake):
                                 if task_label_ids_list[ex_id] ==  0:
