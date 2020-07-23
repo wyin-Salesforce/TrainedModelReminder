@@ -569,7 +569,7 @@ def main():
 
 
     #MNLI-SNLI-SciTail-RTE-SICK
-    train_examples_MNLI, dev_examples_MNLI = processor.get_MNLI_train_and_dev('/export/home/Dataset/glue_data/MNLI/train.tsv', '/export/home/Dataset/glue_data/MNLI/dev.tsv') #train_pu_half_v1.txt
+    train_examples_MNLI, dev_examples_MNLI = processor.get_MNLI_train_and_dev('/export/home/Dataset/glue_data/MNLI/train.tsv', '/export/home/Dataset/glue_data/MNLI/dev_mismatched.tsv') #train_pu_half_v1.txt
     train_examples_SNLI, dev_examples_SNLI = processor.get_SNLI_train_and_dev('/export/home/Dataset/glue_data/SNLI/train.tsv', '/export/home/Dataset/glue_data/SNLI/dev.tsv')
     train_examples_SciTail, dev_examples_SciTail = processor.get_SciTail_train_and_dev('/export/home/Dataset/SciTailV1/tsv_format/scitail_1.0_train.tsv', '/export/home/Dataset/SciTailV1/tsv_format/scitail_1.0_dev.tsv')
     train_examples_RTE, dev_examples_RTE = processor.get_RTE_train_and_dev('/export/home/Dataset/glue_data/RTE/train.tsv', '/export/home/Dataset/glue_data/RTE/dev.tsv')
