@@ -237,7 +237,7 @@ class RteProcessor(DataProcessor):
 
             for folder in folders:
                 filename = path+folder+'/'+prefix+'.jsonl'
-                print('loading ANLI...', filename)
+                # print('loading ANLI...', filename)
                 with open(filename, 'r') as f:
                     for line in json_lines.reader(f):
                         guid_id+=1
@@ -676,15 +676,15 @@ def main():
             global_step += 1
             iter_co+=1
             if iter_co % 500:
-                print('loss........:', loss)
+                # print('loss........:', loss)
                 # if iter_co % len(train_dataloader) ==0:
                 '''
-                start evaluate on MNLI dev set after this epoch
+                start evaluate on  dev set after this epoch
                 '''
                 model.eval()
-                logger.info("***** Running evaluation *****")
-                logger.info("  Num examples = %d", len(valid_examples_MNLI))
-                logger.info("  Batch size = %d", args.eval_batch_size)
+                # logger.info("***** Running evaluation *****")
+                # logger.info("  Num examples = %d", len(valid_examples_MNLI))
+                # logger.info("  Batch size = %d", args.eval_batch_size)
 
 
                 for idd, valid_dataloader in enumerate(valid_dataloader_list):
@@ -693,7 +693,7 @@ def main():
                     nb_eval_steps = 0
                     preds = []
                     gold_label_ids = []
-                    print('Evaluating...')
+                    print('Evaluating...', task_label)
                     for input_ids, input_mask, segment_ids, label_ids, task_label_ids in valid_dataloader:
                         input_ids = input_ids.to(device)
                         input_mask = input_mask.to(device)
