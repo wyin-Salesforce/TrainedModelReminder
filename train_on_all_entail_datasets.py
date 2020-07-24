@@ -561,7 +561,7 @@ def main():
     pretrain_model_dir = 'roberta-large-mnli' #'roberta-large' , 'roberta-large-mnli'
     model = RobertaForSequenceClassification.from_pretrained(pretrain_model_dir, num_labels=num_labels)
     tokenizer = RobertaTokenizer.from_pretrained(pretrain_model_dir, do_lower_case=args.do_lower_case)
-
+    model.to(device)
 
 
 
@@ -586,7 +586,7 @@ def main():
     # multi-gpu training (should be after apex fp16 initialization)
     if n_gpu > 1:
         model = torch.nn.DataParallel(model)
-    model.to(device)
+
 
 
 
