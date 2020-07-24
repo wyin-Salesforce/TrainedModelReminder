@@ -448,10 +448,20 @@ def main():
     parser.add_argument("--do_lower_case",
                         action='store_true',
                         help="Set this flag if you are using an uncased model.")
+
+
+    parser.add_argument("--per_gpu_train_batch_size",
+                        default=16,
+                        type=int,
+                        help="Total batch size for training.")
     parser.add_argument("--train_batch_size",
                         default=16,
                         type=int,
                         help="Total batch size for training.")
+    parser.add_argument("--per_gpu_eval_batch_size",
+                        default=64,
+                        type=int,
+                        help="Total batch size for eval.")
     parser.add_argument("--eval_batch_size",
                         default=64,
                         type=int,
@@ -487,6 +497,13 @@ def main():
     parser.add_argument('--fp16',
                         action='store_true',
                         help="Whether to use 16-bit float precision instead of 32-bit")
+    parser.add_argument(
+        "--fp16_opt_level",
+        type=str,
+        default="O1",
+        help="For fp16: Apex AMP optimization level selected in ['O0', 'O1', 'O2', and 'O3']."
+        "See details at https://nvidia.github.io/apex/amp.html",
+    )
     parser.add_argument('--loss_scale',
                         type=float, default=0,
                         help="Loss scaling to improve fp16 numeric stability. Only used when fp16 set to True.\n"
@@ -508,12 +525,7 @@ def main():
     if args.local_rank == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         n_gpu = torch.cuda.device_count()
-    else:
-        torch.cuda.set_device(args.local_rank)
-        device = torch.device("cuda", args.local_rank)
-        n_gpu = 1
-        # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
-        torch.distributed.init_process_group(backend='nccl')
+
     logger.info("device: {} n_gpu: {}, distributed training: {}, 16-bits training: {}".format(
         device, n_gpu, bool(args.local_rank != -1), args.fp16))
 
@@ -521,6 +533,9 @@ def main():
         raise ValueError("Invalid gradient_accumulation_steps parameter: {}, should be >= 1".format(
                             args.gradient_accumulation_steps))
 
+
+    args.train_batch_size = args.per_gpu_train_batch_size * max(1, n_gpu)
+    args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, n_gpu)
     args.train_batch_size = args.train_batch_size // args.gradient_accumulation_steps
 
     random.seed(args.seed)
@@ -546,10 +561,9 @@ def main():
     pretrain_model_dir = 'roberta-large-mnli' #'roberta-large' , 'roberta-large-mnli'
     model = RobertaForSequenceClassification.from_pretrained(pretrain_model_dir, num_labels=num_labels)
     tokenizer = RobertaTokenizer.from_pretrained(pretrain_model_dir, do_lower_case=args.do_lower_case)
-    model.to(device)
 
-    if n_gpu > 1:
-        model = torch.nn.DataParallel(model)
+
+
 
     # Prepare optimizer
     param_optimizer = list(model.named_parameters())
@@ -562,8 +576,17 @@ def main():
     optimizer = AdamW(optimizer_grouped_parameters,
                              lr=args.learning_rate)
 
+    if args.fp16:
+        try:
+            from apex import amp
+        except ImportError:
+            raise ImportError("Please install apex from https://www.github.com/nvidia/apex to use fp16 training.")
+        model, optimizer = amp.initialize(model, optimizer, opt_level=args.fp16_opt_level)
 
-
+    # multi-gpu training (should be after apex fp16 initialization)
+    if n_gpu > 1:
+        model = torch.nn.DataParallel(model)
+    model.to(device)
 
 
 
@@ -579,6 +602,8 @@ def main():
     dev_task_label = [0,0,1,1,0]
     task_names = ['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
     '''iter over each dataset'''
+
+
 
     num_train_optimization_steps = int(
         len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
@@ -648,7 +673,7 @@ def main():
 
 
     iter_co = 0
-    for _ in trange(int(args.num_train_epochs), desc="Epoch"):
+    for epoch_i in trange(int(args.num_train_epochs), desc="Epoch"):
         for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
             model.train()
             batch = tuple(t.to(device) for t in batch)
@@ -677,73 +702,80 @@ def main():
             iter_co+=1
             # if iter_co % 500:
                 # print('loss........:', loss)
-            if iter_co % len(train_dataloader) ==0:
-                '''
-                start evaluate on  dev set after this epoch
-                '''
-                model.eval()
-                # logger.info("***** Running evaluation *****")
-                # logger.info("  Num examples = %d", len(valid_examples_MNLI))
-                # logger.info("  Batch size = %d", args.eval_batch_size)
+            # if iter_co % len(train_dataloader) ==0:
+        '''
+        start evaluate on  dev set after this epoch
+        '''
+        if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
+            model = torch.nn.DataParallel(model)
+        model.eval()
+        # logger.info("***** Running evaluation *****")
+        # logger.info("  Num examples = %d", len(valid_examples_MNLI))
+        # logger.info("  Batch size = %d", args.eval_batch_size)
+
+        dev_acc_sum = 0.0
+        for idd, valid_dataloader in enumerate(valid_dataloader_list):
+            task_label = dev_task_label[idd]
+            eval_loss = 0
+            nb_eval_steps = 0
+            preds = []
+            gold_label_ids = []
+            # print('Evaluating...', task_label)
+            # for _, batch in enumerate(tqdm(valid_dataloader, desc=task_names[idd])):
+            for _, batch in enumerate(valid_dataloader):
+                batch = tuple(t.to(device) for t in batch)
+                input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
+                # input_ids = input_ids.to(device)
+                # input_mask = input_mask.to(device)
+                # segment_ids = segment_ids.to(device)
+                # label_ids = label_ids.to(device)
 
 
-                for idd, valid_dataloader in enumerate(valid_dataloader_list):
-                    task_label = dev_task_label[idd]
-                    eval_loss = 0
-                    nb_eval_steps = 0
-                    preds = []
-                    gold_label_ids = []
-                    # print('Evaluating...', task_label)
-                    # for _, batch in enumerate(tqdm(valid_dataloader, desc=task_names[idd])):
-                    for _, batch in enumerate(valid_dataloader):
-                        batch = tuple(t.to(device) for t in batch)
-                        input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
-                        # input_ids = input_ids.to(device)
-                        # input_mask = input_mask.to(device)
-                        # segment_ids = segment_ids.to(device)
-                        # label_ids = label_ids.to(device)
-
-
-                        if task_label == 0:
-                            gold_label_ids+=list(label_ids.detach().cpu().numpy())
+                if task_label == 0:
+                    gold_label_ids+=list(label_ids.detach().cpu().numpy())
+                else:
+                    task_label_ids_list = list(task_label_ids.detach().cpu().numpy())
+                    gold_label_batch_fake = list(label_ids.detach().cpu().numpy())
+                    for ex_id, label_id in enumerate(gold_label_batch_fake):
+                        if task_label_ids_list[ex_id] ==  0:
+                            gold_label_ids.append(label_id) #0
                         else:
-                            task_label_ids_list = list(task_label_ids.detach().cpu().numpy())
-                            gold_label_batch_fake = list(label_ids.detach().cpu().numpy())
-                            for ex_id, label_id in enumerate(gold_label_batch_fake):
-                                if task_label_ids_list[ex_id] ==  0:
-                                    gold_label_ids.append(label_id) #0
-                                else:
-                                    gold_label_ids.append(1) #1
+                            gold_label_ids.append(1) #1
 
 
-                        with torch.no_grad():
-                            logits = model(input_ids, input_mask, None, labels=None)
-                        logits = logits[0]
-                        if len(preds) == 0:
-                            preds.append(logits.detach().cpu().numpy())
-                        else:
-                            preds[0] = np.append(preds[0], logits.detach().cpu().numpy(), axis=0)
+                with torch.no_grad():
+                    logits = model(input_ids, input_mask, None, labels=None)
+                logits = logits[0]
+                if len(preds) == 0:
+                    preds.append(logits.detach().cpu().numpy())
+                else:
+                    preds[0] = np.append(preds[0], logits.detach().cpu().numpy(), axis=0)
 
-                    preds = preds[0]
-                    pred_probs = softmax(preds,axis=1)
-                    pred_label_ids_3way = np.argmax(pred_probs, axis=1)
-                    pred_label_ids = []
-                    for pred_label_i in pred_label_ids_3way:
-                        if pred_label_i == 0:
-                            pred_label_ids.append(0)
-                        else:
-                            pred_label_ids.append(1)
+            preds = preds[0]
+            pred_probs = softmax(preds,axis=1)
+            pred_label_ids_3way = np.argmax(pred_probs, axis=1)
+            if task_label == 0:
+                '''3-way tasks MNLI, SNLI, ANLI'''
+                pred_label_ids = pred_label_ids_3way
+            else:
+                pred_label_ids = []
+                for pred_label_i in pred_label_ids_3way:
+                    if pred_label_i == 0:
+                        pred_label_ids.append(0)
+                    else:
+                        pred_label_ids.append(1)
 
-                    assert len(pred_label_ids) == len(gold_label_ids)
-                    hit_co = 0
-                    for k in range(len(pred_label_ids)):
-                        if pred_label_ids[k] == gold_label_ids[k]:
-                            hit_co +=1
-                    test_acc = hit_co/len(gold_label_ids)
-                    print(task_names[idd], ' dev acc:', test_acc)
+            assert len(pred_label_ids) == len(gold_label_ids)
+            hit_co = 0
+            for k in range(len(pred_label_ids)):
+                if pred_label_ids[k] == gold_label_ids[k]:
+                    hit_co +=1
+            test_acc = hit_co/len(gold_label_ids)
+            dev_acc_sum+=test_acc
+            print(task_names[idd], ' dev acc:', test_acc)
 
         '''store the model, because we can test after a max_dev acc reached'''
-        store_transformers_models(model, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI')
+        store_transformers_models(model, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
 
 
 
@@ -752,4 +784,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CUDA_VISIBLE_DEVICES=0 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --num_train_epochs 5 --train_batch_size 32 --eval_batch_size 64
+# CUDA_VISIBLE_DEVICES=0,1,2,3,4,5 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --fp16 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
