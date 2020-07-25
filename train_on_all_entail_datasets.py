@@ -600,12 +600,6 @@ def main():
     train_examples = train_examples_SciTail#train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
     dev_examples_list = [dev_examples_SciTail]#[dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
 
-    print('dev_examples_list:', dev_examples_list[0][0].label, dev_examples_list[0][0].task_label)
-    print('dev_examples_list:', dev_examples_list[0][1].label, dev_examples_list[0][1].task_label, dev_examples_list[0][1].text_a, dev_examples_list[0][1].text_b)
-    print('dev_examples_list:', dev_examples_list[0][2].label, dev_examples_list[0][2].task_label)
-    print('dev_examples_list:', dev_examples_list[0][3].label, dev_examples_list[0][3].task_label)
-    print('dev_examples_list:', dev_examples_list[0][4].label, dev_examples_list[0][4].task_label)
-    print('dev_examples_list:', dev_examples_list[0][5].label, dev_examples_list[0][5].task_label)
     dev_task_label = [1]#[0,0,1,1,0]
     task_names = ['SciTail']#['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
     '''iter over each dataset'''
@@ -693,6 +687,7 @@ def main():
             prob_matrix[changed_places, 0] = 1 - prob_matrix[changed_places, 0]
 
             loss_fct = CrossEntropyLoss()
+            print('label_ids:', label_ids)
             loss = loss_fct(prob_matrix, label_ids.view(-1))
 
             if n_gpu > 1:
