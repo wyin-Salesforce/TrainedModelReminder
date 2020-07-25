@@ -558,7 +558,7 @@ def main():
 
 
     num_labels = len(["entailment", "neutral", "contradiction"])
-    pretrain_model_dir = 'roberta-large' #'roberta-large' , 'roberta-large-mnli'
+    pretrain_model_dir = 'roberta-large-mnli' #'roberta-large' , 'roberta-large-mnli'
     model = RobertaForSequenceClassification.from_pretrained(pretrain_model_dir, num_labels=num_labels)
     tokenizer = RobertaTokenizer.from_pretrained(pretrain_model_dir, do_lower_case=args.do_lower_case)
     model.to(device)
@@ -769,7 +769,7 @@ def main():
                         pred_label_ids.append(1)
 
             print('gold_label_ids:', gold_label_ids[:20])
-            print('pred_label_ids:', pred_label_ids[:100])
+            print('pred_label_ids:', sum(pred_label_ids), pred_label_ids[:100])
             assert len(pred_label_ids) == len(gold_label_ids)
             hit_co = 0
             for k in range(len(pred_label_ids)):
