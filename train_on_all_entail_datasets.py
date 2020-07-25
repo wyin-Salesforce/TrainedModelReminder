@@ -683,11 +683,11 @@ def main():
             prob_matrix = logits[0].view(-1, num_labels)
 
             '''change the entail prob to p or 1-p'''
+            print('task_label_ids:', task_label_ids)
             changed_places = torch.nonzero(task_label_ids, as_tuple=False)
             prob_matrix[changed_places, 0] = 1 - prob_matrix[changed_places, 0]
 
             loss_fct = CrossEntropyLoss()
-            print('label_ids:', label_ids)
             loss = loss_fct(prob_matrix, label_ids.view(-1))
 
             if n_gpu > 1:
