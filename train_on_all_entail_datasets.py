@@ -734,6 +734,7 @@ def main():
                 if task_label == 0:
                     gold_label_ids+=list(label_ids.detach().cpu().numpy())
                 else:
+                    '''SciTail, RTE'''
                     task_label_ids_list = list(task_label_ids.detach().cpu().numpy())
                     gold_label_batch_fake = list(label_ids.detach().cpu().numpy())
                     for ex_id, label_id in enumerate(gold_label_batch_fake):
@@ -766,6 +767,8 @@ def main():
                     else:
                         pred_label_ids.append(1)
 
+            print('gold_label_ids:', gold_label_ids[:20])
+            print('pred_label_ids:', pred_label_ids[:100])
             assert len(pred_label_ids) == len(gold_label_ids)
             hit_co = 0
             for k in range(len(pred_label_ids)):
