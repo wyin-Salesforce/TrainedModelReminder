@@ -601,7 +601,7 @@ def main():
     dev_examples_list = [dev_examples_SciTail]#[dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
 
     print('dev_examples_list:', dev_examples_list[0][0].label, dev_examples_list[0][0].task_label)
-    print('dev_examples_list:', dev_examples_list[0][1].label, dev_examples_list[0][1].task_label)
+    print('dev_examples_list:', dev_examples_list[0][1].label, dev_examples_list[0][1].task_label, dev_examples_list[0][1].text_a, dev_examples_list[0][1].text_b)
     print('dev_examples_list:', dev_examples_list[0][2].label, dev_examples_list[0][2].task_label)
     print('dev_examples_list:', dev_examples_list[0][3].label, dev_examples_list[0][3].task_label)
     print('dev_examples_list:', dev_examples_list[0][4].label, dev_examples_list[0][4].task_label)
