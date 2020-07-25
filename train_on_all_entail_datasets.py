@@ -597,10 +597,10 @@ def main():
     train_examples_RTE, dev_examples_RTE = processor.get_RTE_train_and_dev('/export/home/Dataset/glue_data/RTE/train.tsv', '/export/home/Dataset/glue_data/RTE/dev.tsv')
     train_examples_ANLI, dev_examples_ANLI = processor.get_ANLI_train_and_dev('train', 'dev', '/export/home/Dataset/para_entail_datasets/ANLI/anli_v0.1/')
 
-    train_examples = train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
-    dev_examples_list = [dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
-    dev_task_label = [0,0,1,1,0]
-    task_names = ['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
+    train_examples = train_examples_SciTail#train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
+    dev_examples_list = [dev_examples_SciTail]#[dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
+    dev_task_label = [1]#[0,0,1,1,0]
+    task_names = ['SciTail']#['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
     '''iter over each dataset'''
 
 
@@ -758,6 +758,7 @@ def main():
                 '''3-way tasks MNLI, SNLI, ANLI'''
                 pred_label_ids = pred_label_ids_3way
             else:
+                '''SciTail, RTE'''
                 pred_label_ids = []
                 for pred_label_i in pred_label_ids_3way:
                     if pred_label_i == 0:
@@ -775,7 +776,10 @@ def main():
             print(task_names[idd], ' dev acc:', test_acc)
 
         '''store the model, because we can test after a max_dev acc reached'''
-        store_transformers_models(model, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
+        model_to_save = (
+            model.module if hasattr(model, "module") else model
+        )  # Take care of distributed/parallel training
+        store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
 
 
 
