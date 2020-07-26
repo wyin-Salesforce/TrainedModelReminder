@@ -682,9 +682,12 @@ def main():
             logits = model(input_ids, input_mask, None, labels=None)
             prob_matrix = logits[0].view(-1, num_labels)
 
+            print('init prob_matrix:', prob_matrix)
             '''change the entail prob to p or 1-p'''
             changed_places = torch.nonzero(task_label_ids, as_tuple=False)
+            print('changed_places:', changed_places)
             prob_matrix[changed_places, 0] = 1 - prob_matrix[changed_places, 0]
+            print('after prob_matrix:', prob_matrix)
 
             loss_fct = CrossEntropyLoss()
             loss = loss_fct(prob_matrix, label_ids.view(-1))
