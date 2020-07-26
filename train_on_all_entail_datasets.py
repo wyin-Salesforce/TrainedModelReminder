@@ -598,11 +598,11 @@ def main():
     train_examples_RTE, dev_examples_RTE = processor.get_RTE_train_and_dev('/export/home/Dataset/glue_data/RTE/train.tsv', '/export/home/Dataset/glue_data/RTE/dev.tsv')
     train_examples_ANLI, dev_examples_ANLI = processor.get_ANLI_train_and_dev('train', 'dev', '/export/home/Dataset/para_entail_datasets/ANLI/anli_v0.1/')
 
-    train_examples = train_examples_RTE#train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
-    dev_examples_list = [dev_examples_RTE]#[dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
+    train_examples = train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
+    dev_examples_list = [dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
 
-    dev_task_label = [1]#[0,0,1,1,0]
-    task_names = ['RTE']#['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
+    dev_task_label = [0,0,1,1,0]
+    task_names = ['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
     '''iter over each dataset'''
 
 
@@ -681,17 +681,14 @@ def main():
             batch = tuple(t.to(device) for t in batch)
             input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
             logits = model(input_ids, input_mask, None, labels=None)
+
             prob_matrix = F.log_softmax(logits[0].view(-1, num_labels))
+            '''this step *1.0 is very important, otherwise bug'''
             new_prob_matrix = prob_matrix*1.0
-            # print('init prob_matrix:', prob_matrix)
             '''change the entail prob to p or 1-p'''
             changed_places = torch.nonzero(task_label_ids, as_tuple=False)
-            # print('changed_places:', changed_places)
             new_prob_matrix[changed_places, 0] = 1.0 - prob_matrix[changed_places, 0]
-            # print('after prob_matrix:', prob_matrix)
 
-            # loss_fct = CrossEntropyLoss()
-            # loss = loss_fct(prob_matrix, label_ids.view(-1))
             loss = F.nll_loss(new_prob_matrix, label_ids.view(-1))
 
             if n_gpu > 1:
@@ -773,8 +770,8 @@ def main():
                     else:
                         pred_label_ids.append(1)
 
-            print('gold_label_ids:', sum(gold_label_ids), sum(gold_label_ids)/len(gold_label_ids), gold_label_ids[:20])
-            print('pred_label_ids:', sum(pred_label_ids), pred_label_ids[:100])
+            # print('gold_label_ids:', sum(gold_label_ids), sum(gold_label_ids)/len(gold_label_ids), gold_label_ids[:20])
+            # print('pred_label_ids:', sum(pred_label_ids), pred_label_ids[:100])
             assert len(pred_label_ids) == len(gold_label_ids)
             hit_co = 0
             for k in range(len(pred_label_ids)):
