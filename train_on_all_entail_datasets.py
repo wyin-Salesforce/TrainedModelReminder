@@ -682,7 +682,7 @@ def main():
             logits = model(input_ids, input_mask, None, labels=None)
             prob_matrix = torch.nn.Softmax(dim=1)(logits[0].view(-1, num_labels))
 
-            # print('init prob_matrix:', prob_matrix)
+            print('init prob_matrix:', prob_matrix)
             '''change the entail prob to p or 1-p'''
             changed_places = torch.nonzero(task_label_ids, as_tuple=False)
             # print('changed_places:', changed_places)
