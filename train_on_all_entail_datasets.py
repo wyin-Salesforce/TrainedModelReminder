@@ -705,87 +705,87 @@ def main():
             iter_co+=1
             # if iter_co % 500:
                 # print('loss........:', loss)
-            # if iter_co % len(train_dataloader) ==0:
-        '''
-        start evaluate on  dev set after this epoch
-        '''
-        if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
-            model = torch.nn.DataParallel(model)
-        model.eval()
-        # logger.info("***** Running evaluation *****")
-        # logger.info("  Num examples = %d", len(valid_examples_MNLI))
-        # logger.info("  Batch size = %d", args.eval_batch_size)
+            if iter_co % (len(train_dataloader)//5) ==0:
+                '''
+                start evaluate on  dev set after this epoch
+                '''
+                if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
+                    model = torch.nn.DataParallel(model)
+                model.eval()
+                # logger.info("***** Running evaluation *****")
+                # logger.info("  Num examples = %d", len(valid_examples_MNLI))
+                # logger.info("  Batch size = %d", args.eval_batch_size)
 
-        dev_acc_sum = 0.0
-        for idd, valid_dataloader in enumerate(valid_dataloader_list):
-            task_label = dev_task_label[idd]
-            eval_loss = 0
-            nb_eval_steps = 0
-            preds = []
-            gold_label_ids = []
-            # print('Evaluating...', task_label)
-            # for _, batch in enumerate(tqdm(valid_dataloader, desc=task_names[idd])):
-            for _, batch in enumerate(valid_dataloader):
-                batch = tuple(t.to(device) for t in batch)
-                input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
-                # input_ids = input_ids.to(device)
-                # input_mask = input_mask.to(device)
-                # segment_ids = segment_ids.to(device)
-                # label_ids = label_ids.to(device)
+                dev_acc_sum = 0.0
+                for idd, valid_dataloader in enumerate(valid_dataloader_list):
+                    task_label = dev_task_label[idd]
+                    eval_loss = 0
+                    nb_eval_steps = 0
+                    preds = []
+                    gold_label_ids = []
+                    # print('Evaluating...', task_label)
+                    # for _, batch in enumerate(tqdm(valid_dataloader, desc=task_names[idd])):
+                    for _, batch in enumerate(valid_dataloader):
+                        batch = tuple(t.to(device) for t in batch)
+                        input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
+                        # input_ids = input_ids.to(device)
+                        # input_mask = input_mask.to(device)
+                        # segment_ids = segment_ids.to(device)
+                        # label_ids = label_ids.to(device)
 
 
-                if task_label == 0:
-                    gold_label_ids+=list(label_ids.detach().cpu().numpy())
-                else:
-                    '''SciTail, RTE'''
-                    task_label_ids_list = list(task_label_ids.detach().cpu().numpy())
-                    gold_label_batch_fake = list(label_ids.detach().cpu().numpy())
-                    for ex_id, label_id in enumerate(gold_label_batch_fake):
-                        if task_label_ids_list[ex_id] ==  0:
-                            gold_label_ids.append(label_id) #0
+                        if task_label == 0:
+                            gold_label_ids+=list(label_ids.detach().cpu().numpy())
                         else:
-                            gold_label_ids.append(1) #1
+                            '''SciTail, RTE'''
+                            task_label_ids_list = list(task_label_ids.detach().cpu().numpy())
+                            gold_label_batch_fake = list(label_ids.detach().cpu().numpy())
+                            for ex_id, label_id in enumerate(gold_label_batch_fake):
+                                if task_label_ids_list[ex_id] ==  0:
+                                    gold_label_ids.append(label_id) #0
+                                else:
+                                    gold_label_ids.append(1) #1
 
 
-                with torch.no_grad():
-                    logits = model(input_ids, input_mask, None, labels=None)
-                logits = logits[0]
-                if len(preds) == 0:
-                    preds.append(logits.detach().cpu().numpy())
-                else:
-                    preds[0] = np.append(preds[0], logits.detach().cpu().numpy(), axis=0)
+                        with torch.no_grad():
+                            logits = model(input_ids, input_mask, None, labels=None)
+                        logits = logits[0]
+                        if len(preds) == 0:
+                            preds.append(logits.detach().cpu().numpy())
+                        else:
+                            preds[0] = np.append(preds[0], logits.detach().cpu().numpy(), axis=0)
 
-            preds = preds[0]
-            pred_probs = softmax(preds,axis=1)
-            pred_label_ids_3way = np.argmax(pred_probs, axis=1)
-            if task_label == 0:
-                '''3-way tasks MNLI, SNLI, ANLI'''
-                pred_label_ids = pred_label_ids_3way
-            else:
-                '''SciTail, RTE'''
-                pred_label_ids = []
-                for pred_label_i in pred_label_ids_3way:
-                    if pred_label_i == 0:
-                        pred_label_ids.append(0)
+                    preds = preds[0]
+                    pred_probs = softmax(preds,axis=1)
+                    pred_label_ids_3way = np.argmax(pred_probs, axis=1)
+                    if task_label == 0:
+                        '''3-way tasks MNLI, SNLI, ANLI'''
+                        pred_label_ids = pred_label_ids_3way
                     else:
-                        pred_label_ids.append(1)
+                        '''SciTail, RTE'''
+                        pred_label_ids = []
+                        for pred_label_i in pred_label_ids_3way:
+                            if pred_label_i == 0:
+                                pred_label_ids.append(0)
+                            else:
+                                pred_label_ids.append(1)
 
-            # print('gold_label_ids:', sum(gold_label_ids), sum(gold_label_ids)/len(gold_label_ids), gold_label_ids[:20])
-            # print('pred_label_ids:', sum(pred_label_ids), pred_label_ids[:100])
-            assert len(pred_label_ids) == len(gold_label_ids)
-            hit_co = 0
-            for k in range(len(pred_label_ids)):
-                if pred_label_ids[k] == gold_label_ids[k]:
-                    hit_co +=1
-            test_acc = hit_co/len(gold_label_ids)
-            dev_acc_sum+=test_acc
-            print(task_names[idd], ' dev acc:', test_acc)
+                    # print('gold_label_ids:', sum(gold_label_ids), sum(gold_label_ids)/len(gold_label_ids), gold_label_ids[:20])
+                    # print('pred_label_ids:', sum(pred_label_ids), pred_label_ids[:100])
+                    assert len(pred_label_ids) == len(gold_label_ids)
+                    hit_co = 0
+                    for k in range(len(pred_label_ids)):
+                        if pred_label_ids[k] == gold_label_ids[k]:
+                            hit_co +=1
+                    test_acc = hit_co/len(gold_label_ids)
+                    dev_acc_sum+=test_acc
+                    print(task_names[idd], ' dev acc:', test_acc)
 
-        '''store the model, because we can test after a max_dev acc reached'''
-        model_to_save = (
-            model.module if hasattr(model, "module") else model
-        )  # Take care of distributed/parallel training
-        store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
+                '''store the model, because we can test after a max_dev acc reached'''
+                model_to_save = (
+                    model.module if hasattr(model, "module") else model
+                )  # Take care of distributed/parallel training
+                store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
 
 
 
@@ -794,4 +794,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CUDA_VISIBLE_DEVICES=0,1,2,3,4,5 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --fp16 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
+# CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --fp16 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
