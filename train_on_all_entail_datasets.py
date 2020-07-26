@@ -682,7 +682,7 @@ def main():
             input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
             logits = model(input_ids, input_mask, None, labels=None)
             prob_matrix = F.log_softmax(logits[0].view(-1, num_labels))
-            new_prob_matrix = prob_matrix
+            new_prob_matrix = prob_matrix*1.0
             # print('init prob_matrix:', prob_matrix)
             '''change the entail prob to p or 1-p'''
             changed_places = torch.nonzero(task_label_ids, as_tuple=False)
