@@ -189,7 +189,7 @@ class RteProcessor(DataProcessor):
                             InputExample(guid=guid, text_a=text_a, text_b=text_b, label='entailment', task_label=0))
                     else:
                         examples.append(
-                            InputExample(guid=guid, text_a=text_a, text_b=text_b, label='entailment', task_label=1))
+                            InputExample(guid=guid, text_a=text_a, text_b=text_b, label='neutral', task_label=1))
 
             readfile.close()
             print('loaded  SciTail size:', len(examples))
@@ -680,14 +680,14 @@ def main():
             batch = tuple(t.to(device) for t in batch)
             input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
             logits = model(input_ids, input_mask, None, labels=None)
-            prob_matrix = logits[0].view(-1, num_labels)
+            # prob_matrix = logits[0].view(-1, num_labels)
 
             '''change the entail prob to p or 1-p'''
-            changed_places = torch.nonzero(task_label_ids, as_tuple=False)
-            prob_matrix[changed_places, 0] = 1 - prob_matrix[changed_places, 0]
+            # changed_places = torch.nonzero(task_label_ids, as_tuple=False)
+            # prob_matrix[changed_places, 0] = 1 - prob_matrix[changed_places, 0]
 
             loss_fct = CrossEntropyLoss()
-            loss = loss_fct(prob_matrix, label_ids.view(-1))
+            loss = loss_fct(logits[0].view(-1, num_labels), label_ids.view(-1))
 
             if n_gpu > 1:
                 loss = loss.mean() # mean() to average on multi-gpu.
@@ -732,17 +732,17 @@ def main():
                 # label_ids = label_ids.to(device)
 
 
-                if task_label == 0:
-                    gold_label_ids+=list(label_ids.detach().cpu().numpy())
-                else:
-                    '''SciTail, RTE'''
-                    task_label_ids_list = list(task_label_ids.detach().cpu().numpy())
-                    gold_label_batch_fake = list(label_ids.detach().cpu().numpy())
-                    for ex_id, label_id in enumerate(gold_label_batch_fake):
-                        if task_label_ids_list[ex_id] ==  0:
-                            gold_label_ids.append(label_id) #0
-                        else:
-                            gold_label_ids.append(1) #1
+                # if task_label == 0:
+                gold_label_ids+=list(label_ids.detach().cpu().numpy())
+                # else:
+                #     '''SciTail, RTE'''
+                #     task_label_ids_list = list(task_label_ids.detach().cpu().numpy())
+                #     gold_label_batch_fake = list(label_ids.detach().cpu().numpy())
+                #     for ex_id, label_id in enumerate(gold_label_batch_fake):
+                #         if task_label_ids_list[ex_id] ==  0:
+                #             gold_label_ids.append(label_id) #0
+                #         else:
+                #             gold_label_ids.append(1) #1
 
 
                 with torch.no_grad():
@@ -756,17 +756,17 @@ def main():
             preds = preds[0]
             pred_probs = softmax(preds,axis=1)
             pred_label_ids_3way = np.argmax(pred_probs, axis=1)
-            if task_label == 0:
-                '''3-way tasks MNLI, SNLI, ANLI'''
-                pred_label_ids = pred_label_ids_3way
-            else:
-                '''SciTail, RTE'''
-                pred_label_ids = []
-                for pred_label_i in pred_label_ids_3way:
-                    if pred_label_i == 0:
-                        pred_label_ids.append(0)
-                    else:
-                        pred_label_ids.append(1)
+            # if task_label == 0:
+            #     '''3-way tasks MNLI, SNLI, ANLI'''
+            #     pred_label_ids = pred_label_ids_3way
+            # else:
+            #     '''SciTail, RTE'''
+            pred_label_ids = []
+            for pred_label_i in pred_label_ids_3way:
+                if pred_label_i == 0:
+                    pred_label_ids.append(0)
+                else:
+                    pred_label_ids.append(1)
 
             # print('gold_label_ids:', sum(gold_label_ids), sum(gold_label_ids)/len(gold_label_ids), gold_label_ids[:20])
             # print('pred_label_ids:', sum(pred_label_ids), pred_label_ids[:100])
@@ -780,10 +780,10 @@ def main():
             print(task_names[idd], ' dev acc:', test_acc)
 
         '''store the model, because we can test after a max_dev acc reached'''
-        model_to_save = (
-            model.module if hasattr(model, "module") else model
-        )  # Take care of distributed/parallel training
-        store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
+        # model_to_save = (
+        #     model.module if hasattr(model, "module") else model
+        # )  # Take care of distributed/parallel training
+        # store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
 
 
 
