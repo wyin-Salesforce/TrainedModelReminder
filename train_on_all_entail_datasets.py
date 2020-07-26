@@ -601,7 +601,7 @@ def main():
     dev_examples_list = [dev_examples_RTE]#[dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
 
     dev_task_label = [1]#[0,0,1,1,0]
-    task_names = ['SciTail']#['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
+    task_names = ['RTE']#['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
     '''iter over each dataset'''
 
 
@@ -768,8 +768,8 @@ def main():
                     else:
                         pred_label_ids.append(1)
 
-            # print('gold_label_ids:', sum(gold_label_ids), sum(gold_label_ids)/len(gold_label_ids), gold_label_ids[:20])
-            # print('pred_label_ids:', sum(pred_label_ids), pred_label_ids[:100])
+            print('gold_label_ids:', sum(gold_label_ids), sum(gold_label_ids)/len(gold_label_ids), gold_label_ids[:20])
+            print('pred_label_ids:', sum(pred_label_ids), pred_label_ids[:100])
             assert len(pred_label_ids) == len(gold_label_ids)
             hit_co = 0
             for k in range(len(pred_label_ids)):
