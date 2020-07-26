@@ -682,17 +682,17 @@ def main():
             input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
             logits = model(input_ids, input_mask, None, labels=None)
             prob_matrix = F.log_softmax(logits[0].view(-1, num_labels))
-
+            new_prob_matrix = prob_matrix
             # print('init prob_matrix:', prob_matrix)
             '''change the entail prob to p or 1-p'''
             changed_places = torch.nonzero(task_label_ids, as_tuple=False)
             # print('changed_places:', changed_places)
-            prob_matrix[changed_places, 0] = 1.0 - prob_matrix[changed_places, 0]
+            new_prob_matrix[changed_places, 0] = 1.0 - prob_matrix[changed_places, 0]
             # print('after prob_matrix:', prob_matrix)
 
             # loss_fct = CrossEntropyLoss()
             # loss = loss_fct(prob_matrix, label_ids.view(-1))
-            loss = F.nll_loss(prob_matrix, label_ids.view(-1))
+            loss = F.nll_loss(new_prob_matrix, label_ids.view(-1))
 
             if n_gpu > 1:
                 loss = loss.mean() # mean() to average on multi-gpu.
