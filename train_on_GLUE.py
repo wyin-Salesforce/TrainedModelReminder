@@ -267,13 +267,7 @@ roberta-large:
 07/27/2020 16:57:48 - INFO - __main__ -     eval_acc_and_f1 = 0.8830966869506424
 07/27/2020 16:57:48 - INFO - __main__ -     epoch = 3.0
 
-07/27/2020 19:04:05 - INFO - __main__ -   ***** Eval results mrpc *****
-07/27/2020 19:04:05 - INFO - __main__ -     eval_loss = 0.3983176237171782
-07/27/2020 19:04:05 - INFO - __main__ -     eval_acc = 0.8774509803921569
-07/27/2020 19:04:05 - INFO - __main__ -     eval_f1 = 0.9097472924187725
-07/27/2020 19:04:05 - INFO - __main__ -     eval_acc_and_f1 = 0.8935991364054647
-07/27/2020 19:04:05 - INFO - __main__ -     epoch = 3.0
-
+roberta-large-pretrain_on-all_entail:
 07/27/2020 19:13:31 - INFO - __main__ -   ***** Eval results mrpc *****
 07/27/2020 19:13:31 - INFO - __main__ -     eval_loss = 0.2532564901879856
 07/27/2020 19:13:31 - INFO - __main__ -     eval_acc = 0.8799019607843137
