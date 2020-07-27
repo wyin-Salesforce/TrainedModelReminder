@@ -133,10 +133,9 @@ def main():
     print('Store_RoBERTa_From_3way_RoBERTa over...', model_args.model_name_or_path)
     model = AutoModelForSequenceClassification.from_pretrained(
         model_args.model_name_or_path,
-        from_tf=bool(".ckpt" in model_args.model_name_or_path),
+        from_tf=True, #bool(".ckpt" in model_args.model_name_or_path),
         config=config,
         cache_dir=model_args.cache_dir,
-        from_tf=True,
     )
 
     # Get datasets
