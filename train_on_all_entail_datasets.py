@@ -705,7 +705,7 @@ def main():
             iter_co+=1
             # if iter_co % 500:
                 # print('loss........:', loss)
-            if iter_co % (len(train_dataloader)//5) ==0:
+            if iter_co % (len(train_dataloader)//10) ==0:
                 '''
                 start evaluate on  dev set after this epoch
                 '''
@@ -794,4 +794,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --fp16 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
+# CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --fp16 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
