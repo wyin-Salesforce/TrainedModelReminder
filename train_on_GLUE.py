@@ -139,8 +139,15 @@ def main():
         config=config,
         cache_dir=model_args.cache_dir,
     )
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            print name, param.data
     '''it shows that .from_pretrained is different with load_state_dict(model_roberta.roberta.state_dict())'''
     model.roberta.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_0_acc_3.928696072567108')#load_state_dict(model_roberta.roberta.state_dict())
+
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            print name, param.data
 
     # Get datasets
     train_dataset = (
