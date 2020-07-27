@@ -127,19 +127,19 @@ def main():
         cache_dir=model_args.cache_dir,
     )
 
-    model_roberta = RobertaForSequenceClassification.from_pretrained(model_args.model_name_or_path, num_labels=3)
+    # model_roberta = RobertaForSequenceClassification.from_pretrained(model_args.model_name_or_path, num_labels=3)
     # model_args.model_name_or_path = '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/Store_RoBERTa_From_3way_RoBERTa'
     # store_transformers_models(model_roberta.roberta, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'Store_RoBERTa_From_3way_RoBERTa')
     # print('Store_RoBERTa_From_3way_RoBERTa over...', model_args.model_name_or_path)
 
-    model_args.model_name_or_path = 'roberta-large'
+    # model_args.model_name_or_path = 'roberta-large'
     model = AutoModelForSequenceClassification.from_pretrained(
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),
         config=config,
         cache_dir=model_args.cache_dir,
     )
-    model.roberta.from_pretrained('roberta-large-mnli')#load_state_dict(model_roberta.roberta.state_dict())
+    model.roberta.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_0_acc_3.928696072567108')#load_state_dict(model_roberta.roberta.state_dict())
 
     # Get datasets
     train_dataset = (
@@ -274,4 +274,12 @@ roberta-large-pretrain_on-all_entail:
 07/27/2020 19:13:31 - INFO - __main__ -     eval_f1 = 0.9153713298791019
 07/27/2020 19:13:31 - INFO - __main__ -     eval_acc_and_f1 = 0.8976366453317077
 07/27/2020 19:13:31 - INFO - __main__ -     epoch = 3.0
+
+roberta-large-mnli:
+07/27/2020 19:54:40 - INFO - __main__ -   ***** Eval results mrpc *****
+07/27/2020 19:54:40 - INFO - __main__ -     eval_loss = 0.2532564901879856
+07/27/2020 19:54:40 - INFO - __main__ -     eval_acc = 0.8799019607843137
+07/27/2020 19:54:40 - INFO - __main__ -     eval_f1 = 0.9153713298791019
+07/27/2020 19:54:40 - INFO - __main__ -     eval_acc_and_f1 = 0.8976366453317077
+07/27/2020 19:54:40 - INFO - __main__ -     epoch = 3.0
 '''
