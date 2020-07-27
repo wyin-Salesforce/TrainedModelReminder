@@ -139,7 +139,7 @@ def main():
         config=config,
         cache_dir=model_args.cache_dir,
     )
-    model.roberta.load_state_dict(model_roberta.roberta.state_dict())
+    model.roberta.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_0_acc_3.928696072567108')#load_state_dict(model_roberta.roberta.state_dict())
 
     # Get datasets
     train_dataset = (
@@ -259,11 +259,18 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch  --nproc
 
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch  --nproc_per_node 8 train_on_GLUE.py --model_name_or_path /export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_0_acc_3.928696072567108 --task_name MRPC --do_train --do_eval --data_dir /export/home/Dataset/glue_data/MRPC/  --max_seq_length 128  --per_device_train_batch_size 8  --learning_rate 2e-5  --num_train_epochs 3.0  --output_dir MRPC_output/ --overwrite_output_dir
 
-
+roberta-large:
 07/27/2020 16:57:48 - INFO - __main__ -   ***** Eval results mrpc *****
 07/27/2020 16:57:48 - INFO - __main__ -     eval_loss = 0.1761062344137047
 07/27/2020 16:57:48 - INFO - __main__ -     eval_acc = 0.8627450980392157
 07/27/2020 16:57:48 - INFO - __main__ -     eval_f1 = 0.903448275862069
 07/27/2020 16:57:48 - INFO - __main__ -     eval_acc_and_f1 = 0.8830966869506424
 07/27/2020 16:57:48 - INFO - __main__ -     epoch = 3.0
+
+07/27/2020 19:04:05 - INFO - __main__ -   ***** Eval results mrpc *****
+07/27/2020 19:04:05 - INFO - __main__ -     eval_loss = 0.3983176237171782
+07/27/2020 19:04:05 - INFO - __main__ -     eval_acc = 0.8774509803921569
+07/27/2020 19:04:05 - INFO - __main__ -     eval_f1 = 0.9097472924187725
+07/27/2020 19:04:05 - INFO - __main__ -     eval_acc_and_f1 = 0.8935991364054647
+07/27/2020 19:04:05 - INFO - __main__ -     epoch = 3.0
 '''
