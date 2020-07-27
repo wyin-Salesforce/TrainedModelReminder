@@ -22,9 +22,9 @@ import os
 import sys
 from dataclasses import dataclass, field
 from typing import Callable, Dict, Optional
-
+from load_data import store_transformers_models
 import numpy as np
-
+from transformers.modeling_roberta import RobertaForSequenceClassification
 from transformers import AutoConfig, AutoModelForSequenceClassification, AutoTokenizer, EvalPrediction, GlueDataset
 from transformers import GlueDataTrainingArguments as DataTrainingArguments
 from transformers import (
@@ -126,6 +126,11 @@ def main():
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
     )
+
+    model_roberta = RobertaForSequenceClassification.from_pretrained(model_args.model_name_or_path, num_labels=3)
+    model_args.model_name_or_path = '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/Store_RoBERTa_From_3way_RoBERTa'
+    store_transformers_models(model_roberta.roberta, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'Store_RoBERTa_From_3way_RoBERTa')
+    print('Store_RoBERTa_From_3way_RoBERTa over...')
     model = AutoModelForSequenceClassification.from_pretrained(
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),
@@ -247,16 +252,15 @@ if __name__ == "__main__":
 
 
 '''
-python -m torch.distributed.launch \
-    --nproc_per_node 8 train_on_GLUE.py \
-    --model_name_or_path roberta-large \
-    --task_name MRPC \
-    --do_train \
-    --do_eval \
-    --data_dir /export/home/Dataset/glue_data/MRPC/ \
-    --max_seq_length 128 \
-    --per_device_train_batch_size 8 \
-    --learning_rate 2e-5 \
-    --num_train_epochs 3.0 \
-    --output_dir MRPC_outputroot/
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch  --nproc_per_node 8 train_on_GLUE.py --model_name_or_path roberta-large --task_name MRPC --do_train --do_eval --data_dir /export/home/Dataset/glue_data/MRPC/  --max_seq_length 128  --per_device_train_batch_size 8  --learning_rate 2e-5  --num_train_epochs 3.0  --output_dir MRPC_output/
+
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch  --nproc_per_node 8 train_on_GLUE.py --model_name_or_path /export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_0_acc_3.928696072567108 --task_name MRPC --do_train --do_eval --data_dir /export/home/Dataset/glue_data/MRPC/  --max_seq_length 128  --per_device_train_batch_size 8  --learning_rate 2e-5  --num_train_epochs 3.0  --output_dir MRPC_output/ --overwrite_output_dir
+
+
+07/27/2020 16:57:48 - INFO - __main__ -   ***** Eval results mrpc *****
+07/27/2020 16:57:48 - INFO - __main__ -     eval_loss = 0.1761062344137047
+07/27/2020 16:57:48 - INFO - __main__ -     eval_acc = 0.8627450980392157
+07/27/2020 16:57:48 - INFO - __main__ -     eval_f1 = 0.903448275862069
+07/27/2020 16:57:48 - INFO - __main__ -     eval_acc_and_f1 = 0.8830966869506424
+07/27/2020 16:57:48 - INFO - __main__ -     epoch = 3.0
 '''
