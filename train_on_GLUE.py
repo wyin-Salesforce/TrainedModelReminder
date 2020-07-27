@@ -128,11 +128,11 @@ def main():
     )
 
     # model_roberta = RobertaForSequenceClassification.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_0_acc_3.928696072567108', num_labels=3)
-    # # model_args.model_name_or_path = '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/Store_RoBERTa_From_3way_RoBERTa'
-    # # store_transformers_models(model_roberta.roberta, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'Store_RoBERTa_From_3way_RoBERTa')
-    # # print('Store_RoBERTa_From_3way_RoBERTa over...', model_args.model_name_or_path)
-    #
-    # # model_args.model_name_or_path = 'roberta-large'
+    # model_args.model_name_or_path = '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/Store_RoBERTa_From_3way_RoBERTa'
+    # store_transformers_models(model_roberta.roberta, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'Store_RoBERTa_From_3way_RoBERTa')
+    # print('Store_RoBERTa_From_3way_RoBERTa over...', model_args.model_name_or_path)
+
+    # model_args.model_name_or_path = 'roberta-large'
     model = AutoModelForSequenceClassification.from_pretrained(
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),
