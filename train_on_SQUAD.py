@@ -825,5 +825,5 @@ if __name__ == "__main__":
     main()
 
 '''
-python -m torch.distributed.launch --nproc_per_node=8 run_squad.py --model_type roberta --model_name_or_path roberta-large --do_train --do_eval --version_2_with_negative --train_file /export/home/Dataset/SQUAD/train-v2.0.json --predict_file /export/home/Dataset/SQUAD/dev-v2.0.json --learning_rate 3e-5 --num_train_epochs 4 --max_seq_length 384 --doc_stride 128 --output_dir SQUAD_output/ --per_gpu_eval_batch_size=2 --per_gpu_train_batch_size=2 --save_steps 5000
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch --nproc_per_node=8 train_on_SQUAD.py --model_type roberta --model_name_or_path roberta-large --do_train --do_eval --version_2_with_negative --train_file /export/home/Dataset/SQUAD/train-v2.0.json --predict_file /export/home/Dataset/SQUAD/dev-v2.0.json --learning_rate 3e-5 --num_train_epochs 4 --max_seq_length 384 --doc_stride 128 --output_dir SQUAD_output/ --per_gpu_eval_batch_size=2 --per_gpu_train_batch_size=2 --save_steps 5000
 '''
