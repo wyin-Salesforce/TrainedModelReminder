@@ -127,7 +127,7 @@ def main():
         cache_dir=model_args.cache_dir,
     )
 
-    model_roberta = RobertaForSequenceClassification.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_0_acc_3.928696072567108', num_labels=3)
+    # model_roberta = RobertaForSequenceClassification.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_epoch_0_acc_3.928696072567108', num_labels=3)
     # model_args.model_name_or_path = '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/Store_RoBERTa_From_3way_RoBERTa'
     # store_transformers_models(model_roberta.roberta, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'Store_RoBERTa_From_3way_RoBERTa')
     # print('Store_RoBERTa_From_3way_RoBERTa over...', model_args.model_name_or_path)
@@ -290,4 +290,12 @@ roberta-large-mnli:
 07/27/2020 19:54:40 - INFO - __main__ -     eval_f1 = 0.9153713298791019
 07/27/2020 19:54:40 - INFO - __main__ -     eval_acc_and_f1 = 0.8976366453317077
 07/27/2020 19:54:40 - INFO - __main__ -     epoch = 3.0
+
+new: roberta.encoder.layer.16.attention.self.value.weight tensor([[ 0.0400, -0.0014,  0.0109,  ...,  0.0370, -0.0582,  0.0564],
+        [ 0.0258,  0.0591, -0.0330,  ...,  0.0011,  0.0239,  0.0850],
+        [ 0.0102,  0.0055, -0.0079,  ..., -0.0437, -0.0563,  0.0283],
+        ...,
+        [-0.0574, -0.1272,  0.0226,  ..., -0.0890, -0.0105,  0.0545],
+        [-0.0023, -0.0322, -0.0334,  ..., -0.0229,  0.0053,  0.1261],
+        [ 0.0407,  0.1235, -0.0006,  ..., -0.0213,  0.0101, -0.0260]])
 '''
