@@ -147,7 +147,7 @@ def main():
 
     for name, param in model.named_parameters():
         if param.requires_grad:
-            print name, param.data
+            print(name, param.data)
 
     # Get datasets
     train_dataset = (
