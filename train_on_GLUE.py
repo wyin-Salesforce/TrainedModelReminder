@@ -133,12 +133,13 @@ def main():
     # print('Store_RoBERTa_From_3way_RoBERTa over...', model_args.model_name_or_path)
 
     # model_args.model_name_or_path = 'roberta-large'
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_args.model_name_or_path,
-        from_tf=bool(".ckpt" in model_args.model_name_or_path),
-        config=config,
-        cache_dir=model_args.cache_dir,
-    )
+    model = AutoModelForSequenceClassification()
+    # model = AutoModelForSequenceClassification.from_pretrained(
+    #     model_args.model_name_or_path,
+    #     from_tf=bool(".ckpt" in model_args.model_name_or_path),
+    #     config=config,
+    #     cache_dir=model_args.cache_dir,
+    # )
     for name, param in model.named_parameters():
         if param.requires_grad and name == 'roberta.encoder.layer.16.attention.self.value.weight':
             print('old:', name, param.data)
