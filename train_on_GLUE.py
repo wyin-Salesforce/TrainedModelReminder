@@ -133,7 +133,7 @@ def main():
     # print('Store_RoBERTa_From_3way_RoBERTa over...', model_args.model_name_or_path)
 
     # model_args.model_name_or_path = 'roberta-large'
-    model = AutoModelForSequenceClassification()
+    model = AutoModelForSequenceClassification.from_config(config)
     # model = AutoModelForSequenceClassification.from_pretrained(
     #     model_args.model_name_or_path,
     #     from_tf=bool(".ckpt" in model_args.model_name_or_path),
