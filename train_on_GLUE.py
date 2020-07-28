@@ -283,4 +283,7 @@ roberta-large-pretrain_on-all_entail:
 07/27/2020 23:34:33 - INFO - __main__ -     epoch = 3.0
 
 
+WNLI:
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -u train_on_GLUE.py --model_name_or_path roberta-large --task_name WNLI --do_train --do_eval --data_dir /export/home/Dataset/glue_data/WNLI/  --max_seq_length 128  --per_device_train_batch_size 8  --learning_rate 2e-5  --num_train_epochs 300.0  --output_dir MRPC_output/ --overwrite_output_dir
+
 '''
