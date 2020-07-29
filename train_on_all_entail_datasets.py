@@ -598,11 +598,11 @@ def main():
     train_examples_RTE, dev_examples_RTE = processor.get_RTE_train_and_dev('/export/home/Dataset/glue_data/RTE/train.tsv', '/export/home/Dataset/glue_data/RTE/dev.tsv')
     train_examples_ANLI, dev_examples_ANLI = processor.get_ANLI_train_and_dev('train', 'dev', '/export/home/Dataset/para_entail_datasets/ANLI/anli_v0.1/')
 
-    train_examples = train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
-    dev_examples_list = [dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
+    train_examples = train_examples_RTE#train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
+    dev_examples_list = dev_examples_RTE#[dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
 
-    dev_task_label = [0,0,1,1,0]
-    task_names = ['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
+    dev_task_label = [1]#[0,0,1,1,0]
+    task_names = ['RTE']#['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
     '''iter over each dataset'''
 
 
@@ -782,10 +782,10 @@ def main():
                     print(task_names[idd], ' dev acc:', test_acc)
 
                 '''store the model, because we can test after a max_dev acc reached'''
-                model_to_save = (
-                    model.module if hasattr(model, "module") else model
-                )  # Take care of distributed/parallel training
-                store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
+                # model_to_save = (
+                #     model.module if hasattr(model, "module") else model
+                # )  # Take care of distributed/parallel training
+                # store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
 
 
 
@@ -794,4 +794,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --fp16 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
+# CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --fp16 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
