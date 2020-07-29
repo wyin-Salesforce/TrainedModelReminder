@@ -704,8 +704,8 @@ def main():
             global_step += 1
             iter_co+=1
 
-            if iter_co % len(train_dataloader) ==0:
-                # if iter_co % (len(train_dataloader)//3) ==0:
+            # if iter_co % len(train_dataloader) ==0:
+            if iter_co % (len(train_dataloader)//5) ==0:
                 '''
                 start evaluate on  dev set after this epoch
                 '''
@@ -789,10 +789,10 @@ def main():
                     print(task_names[idd], ' dev acc:', test_acc)
 
                 '''store the model, because we can test after a max_dev acc reached'''
-                # model_to_save = (
-                #     model.module if hasattr(model, "module") else model
-                # )  # Take care of distributed/parallel training
-                # store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
+                model_to_save = (
+                    model.module if hasattr(model, "module") else model
+                )  # Take care of distributed/parallel training
+                store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
 
 
 
