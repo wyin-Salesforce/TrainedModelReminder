@@ -682,7 +682,7 @@ def main():
             input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
             logits = model(input_ids, input_mask, None, labels=None)
 
-            prob_matrix = F.log_softmax(logits[0].view(-1, num_labels))
+            prob_matrix = F.log_softmax(logits[0].view(-1, num_labels), dim=1)
             '''this step *1.0 is very important, otherwise bug'''
             new_prob_matrix = prob_matrix*1.0
             '''change the entail prob to p or 1-p'''
