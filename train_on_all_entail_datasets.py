@@ -710,9 +710,9 @@ def main():
                 '''
                 start evaluate on  dev set after this epoch
                 '''
-                # if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
-                #     model = torch.nn.DataParallel(model)
-                model.eval()
+                if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
+                    model = torch.nn.DataParallel(model)
+
                 # logger.info("***** Running evaluation *****")
                 # logger.info("  Num examples = %d", len(valid_examples_MNLI))
                 # logger.info("  Batch size = %d", args.eval_batch_size)
@@ -727,6 +727,7 @@ def main():
                     # print('Evaluating...', task_label)
                     # for _, batch in enumerate(tqdm(valid_dataloader, desc=task_names[idd])):
                     for _, batch in enumerate(valid_dataloader):
+                        model.eval()
                         batch = tuple(t.to(device) for t in batch)
                         input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
                         # input_ids = input_ids.to(device)
