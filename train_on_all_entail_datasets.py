@@ -705,8 +705,8 @@ def main():
             iter_co+=1
             # if iter_co % 500:
                 # print('loss........:', loss)
-            # if iter_co % len(train_dataloader) ==0:
-            if iter_co % (len(train_dataloader)//3) ==0:
+            if iter_co % len(train_dataloader) ==0:
+                # if iter_co % (len(train_dataloader)//3) ==0:
                 '''
                 start evaluate on  dev set after this epoch
                 '''
@@ -717,9 +717,9 @@ def main():
                 #     for ii in range(len(child)):
                 #         if type(child[ii])==torch.nn.BatchNorm2d:
                 #             child[ii].track_running_stats = False
-                for m in model.modules():
-                    if isinstance(m, torch.nn.BatchNorm2d):
-                        m.track_running_stats=False
+                # for m in model.modules():
+                #     if isinstance(m, torch.nn.BatchNorm2d):
+                #         m.track_running_stats=False
                 # logger.info("***** Running evaluation *****")
                 # logger.info("  Num examples = %d", len(valid_examples_MNLI))
                 # logger.info("  Batch size = %d", args.eval_batch_size)
