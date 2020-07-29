@@ -705,13 +705,13 @@ def main():
             iter_co+=1
             # if iter_co % 500:
                 # print('loss........:', loss)
-            if iter_co % len(train_dataloader) ==0:
-                # if iter_co % (len(train_dataloader)//10) ==0:
+            # if iter_co % len(train_dataloader) ==0:
+            if iter_co % (len(train_dataloader)//10) ==0:
                 '''
                 start evaluate on  dev set after this epoch
                 '''
-                if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
-                    model = torch.nn.DataParallel(model)
+                # if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
+                #     model = torch.nn.DataParallel(model)
                 model.eval()
                 # logger.info("***** Running evaluation *****")
                 # logger.info("  Num examples = %d", len(valid_examples_MNLI))
