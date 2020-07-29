@@ -787,7 +787,7 @@ def main():
                 #     model.module if hasattr(model, "module") else model
                 # )  # Take care of distributed/parallel training
                 # store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
-
+                model.train()
 
 
 
