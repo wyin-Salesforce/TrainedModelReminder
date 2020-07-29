@@ -210,7 +210,7 @@ class RteProcessor(DataProcessor):
                 if line_co>0:
                     line=row.strip().split('\t')
                     guid = "dev-"+str(line_co-1)
-                    text_a = line[1].strip()
+                    text_a = 'RTE. '+line[1].strip()
                     text_b = line[2].strip()
                     label = line[3].strip() #["entailment", "not_entailment"]
                     if label == 'entailment':
@@ -795,4 +795,9 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --fp16 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
+
+'''
+ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-5 --fp16 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
+
+RTE: 4epoch reaches 86% on dev w/o special token; frequent checkpoint doesn't work
+'''
