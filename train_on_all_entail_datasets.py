@@ -210,7 +210,7 @@ class RteProcessor(DataProcessor):
                 if line_co>0:
                     line=row.strip().split('\t')
                     guid = "dev-"+str(line_co-1)
-                    text_a = 'RTE. '+line[1].strip()
+                    text_a = line[1].strip()
                     text_b = line[2].strip()
                     label = line[3].strip() #["entailment", "not_entailment"]
                     if label == 'entailment':
