@@ -705,14 +705,18 @@ def main():
             iter_co+=1
             # if iter_co % 500:
                 # print('loss........:', loss)
-            # if iter_co % len(train_dataloader) ==0:
-            if iter_co % (len(train_dataloader)//3) ==0:
+            if iter_co % len(train_dataloader) ==0:
+                # if iter_co % (len(train_dataloader)//3) ==0:
                 '''
                 start evaluate on  dev set after this epoch
                 '''
                 # if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
                 #     model = torch.nn.DataParallel(model)
                 model.eval()
+                # for child in model.children():
+                #     for ii in range(len(child)):
+                #         if type(child[ii])==torch.nn.BatchNorm2d:
+                #             child[ii].track_running_stats = False
                 for m in model.modules():
                     if isinstance(m, torch.nn.BatchNorm2d):
                         m.track_running_stats=False
