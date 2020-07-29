@@ -705,8 +705,8 @@ def main():
             iter_co+=1
             # if iter_co % 500:
                 # print('loss........:', loss)
-            if iter_co % len(train_dataloader) ==0:
-                # if iter_co % (len(train_dataloader)//3) ==0:
+            # if iter_co % len(train_dataloader) ==0:
+            if iter_co % (len(train_dataloader)//3) ==0:
                 '''
                 start evaluate on  dev set after this epoch
                 '''
