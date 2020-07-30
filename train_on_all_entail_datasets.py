@@ -128,7 +128,8 @@ class RteProcessor(DataProcessor):
                 if line_co>0:
                     line=row.strip().split('\t')
                     guid = "train-"+str(line_co-1)
-                    text_a = 'MNLI. '+line[8].strip()
+                    # text_a = 'MNLI. '+line[8].strip()
+                    text_a = line[8].strip()
                     text_b = line[9].strip()
                     label = line[-1].strip() #["entailment", "neutral", "contradiction"]
                     examples.append(
@@ -155,7 +156,8 @@ class RteProcessor(DataProcessor):
                 if line_co>0:
                     line=row.strip().split('\t')
                     guid = "train-"+str(line_co-1)
-                    text_a = 'SNLI. '+line[7].strip()
+                    # text_a = 'SNLI. '+line[7].strip()
+                    text_a = line[7].strip()
                     text_b = line[8].strip()
                     label = line[-1].strip() #["entailment", "neutral", "contradiction"]
                     examples.append(
@@ -182,7 +184,8 @@ class RteProcessor(DataProcessor):
                 line=row.strip().split('\t')
                 if len(line) == 3:
                     guid = "train-"+str(line_co-1)
-                    text_a = 'SciTail. '+line[0].strip()
+                    # text_a = 'SciTail. '+line[0].strip()
+                    text_a = line[0].strip()
                     text_b = line[1].strip()
                     label = line[2].strip()
                     if label == 'entails':
@@ -210,7 +213,8 @@ class RteProcessor(DataProcessor):
                 if line_co>0:
                     line=row.strip().split('\t')
                     guid = "dev-"+str(line_co-1)
-                    text_a = 'RTE. '+line[1].strip()
+                    # text_a = 'RTE. '+line[1].strip()
+                    text_a = line[1].strip()
                     text_b = line[2].strip()
                     label = line[3].strip() #["entailment", "not_entailment"]
                     if label == 'entailment':
@@ -242,7 +246,8 @@ class RteProcessor(DataProcessor):
                 with open(filename, 'r') as f:
                     for line in json_lines.reader(f):
                         guid_id+=1
-                        premise = 'ANLI. '+line.get('context')
+                        # premise = 'ANLI. '+line.get('context')
+                        premise = line.get('context')
                         hypothesis = line.get('hypothesis')
 
                         # label = 'entailment' if line.get('label') == 'e' else 'not_entailment'
