@@ -559,7 +559,7 @@ def main():
 
 
     num_labels = len(["entailment", "neutral", "contradiction"])
-    pretrain_model_dir = 'roberta-large-mnli' #'roberta-large' , 'roberta-large-mnli'
+    pretrain_model_dir = 'roberta-large' #'roberta-large' , 'roberta-large-mnli'
     model = RobertaForSequenceClassification.from_pretrained(pretrain_model_dir, num_labels=num_labels)
     tokenizer = RobertaTokenizer.from_pretrained(pretrain_model_dir, do_lower_case=args.do_lower_case)
     model.to(device)
@@ -704,8 +704,8 @@ def main():
             global_step += 1
             iter_co+=1
 
-            # if iter_co % len(train_dataloader) ==0:
-            if iter_co % (len(train_dataloader)//5) ==0:
+            if iter_co % len(train_dataloader) ==0:
+                # if iter_co % (len(train_dataloader)//5) ==0:
                 '''
                 start evaluate on  dev set after this epoch
                 '''
