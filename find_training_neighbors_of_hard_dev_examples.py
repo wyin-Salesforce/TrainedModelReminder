@@ -772,19 +772,11 @@ def main():
         print(task_names[idd], ' dev acc:', test_acc)
 
     print('indice_set size:', len(indice_set))
-    write_neighbor_indices = codecs.open('neighbors_indices.txt', 'w', 'utf-8')
+    write_neighbor_indices = codecs.open('neighbors_indices_before_dropout.v2.txt', 'w', 'utf-8')
     for indice in indice_set:
         write_neighbor_indices.write(str(indice)+'\n')
     write_neighbor_indices.close()
     print('write_neighbor_indices over.')
-    '''store the model, because we can test after a max_dev acc reached'''
-    # model_to_save = (
-    #     model.module if hasattr(model, "module") else model
-    # )  # Take care of distributed/parallel training
-    # store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
-
-
-
 
 
 

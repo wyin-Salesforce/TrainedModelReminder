@@ -561,9 +561,9 @@ class RobertaClassificationHead(nn.Module):
         x = features[:, 0, :]  # take <s> token (equiv. to [CLS])
         x = self.dropout(x)
         x = self.dense(x)
-        x = torch.tanh(x)
-        last_hidden = self.dropout(x)
-        x = self.out_proj(last_hidden)
+        last_hidden = torch.tanh(x)
+        x = self.dropout(last_hidden)
+        x = self.out_proj(x)
         return x, last_hidden
 
 
