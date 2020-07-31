@@ -714,8 +714,8 @@ def main():
                 '''
                 start evaluate on  dev set after this epoch
                 '''
-                # if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
-                #     model = torch.nn.DataParallel(model)
+                if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
+                    model = torch.nn.DataParallel(model)
                 model.eval()
                 for m in model.modules():
                     if isinstance(m, torch.nn.BatchNorm2d):
@@ -756,7 +756,7 @@ def main():
 
 
                         with torch.no_grad():
-                            logits = model(input_ids, input_mask, None, labels=None)
+                            logits = model(input_ids=input_ids, attention_mask=input_mask, token_type_ids=None, labels=None)
                         logits = logits[0]
                         if len(preds) == 0:
                             preds.append(logits.detach().cpu().numpy())

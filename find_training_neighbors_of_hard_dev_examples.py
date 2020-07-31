@@ -693,7 +693,7 @@ def main():
         with torch.no_grad():
             _, reps = model(input_ids, input_mask, None, labels=None)
             train_reps.append(reps)
-    train_reps = torch.concate(train_reps, dim=0)
+    train_reps = torch.concat(train_reps, dim=0)
     print('training reps extracted over...size:', train_reps.shape[0])
 
     '''second, extract reps for dev examples'''
@@ -735,7 +735,7 @@ def main():
             else:
                 preds[0] = np.append(preds[0], logits.detach().cpu().numpy(), axis=0)
 
-        dev_reps = torch.concate(dev_reps, dim=0)
+        dev_reps = torch.concat(dev_reps, dim=0)
 
         preds = preds[0]
         pred_probs = softmax(preds,axis=1)
