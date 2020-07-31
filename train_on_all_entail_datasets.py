@@ -603,7 +603,7 @@ def main():
     train_examples_RTE, dev_examples_RTE = processor.get_RTE_train_and_dev('/export/home/Dataset/glue_data/RTE/train.tsv', '/export/home/Dataset/glue_data/RTE/dev.tsv')
     train_examples_ANLI, dev_examples_ANLI = processor.get_ANLI_train_and_dev('train', 'dev', '/export/home/Dataset/para_entail_datasets/ANLI/anli_v0.1/')
 
-    train_examples = train_examples_RTE#train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
+    train_examples = train_examples_MNLI#train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
     dev_examples_list = [dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
 
     dev_task_label = [0,0,1,1,0]
@@ -806,5 +806,7 @@ if __name__ == "__main__":
 '''
  CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_on_all_entail_datasets.py --task_name rte --do_lower_case --learning_rate 2e-6 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
 
-RTE: 4epoch reaches 86% on dev w/o special token; frequent checkpoint doesn't work
+note:
+RTE--> MNLI, SNLI, SciTail, RTE, ANLI
+remove special token, using roberta-large, check after each epoch
 '''
