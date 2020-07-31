@@ -649,7 +649,7 @@ def main():
     train_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids, all_task_label_ids)
     train_sampler = RandomSampler(train_data)
 
-    train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
+    train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size, drop_last=True)
 
     '''dev data to features'''
     valid_dataloader_list = []
