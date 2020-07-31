@@ -564,7 +564,8 @@ def main():
 
 
     num_labels = len(["entailment", "neutral", "contradiction"])
-    pretrain_model_dir = 'roberta-large' #'roberta-large' , 'roberta-large-mnli'
+    # pretrain_model_dir = 'roberta-large' #'roberta-large' , 'roberta-large-mnli'
+    pretrain_model_dir = '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_2_acc_4.156359461121103' #'roberta-large' , 'roberta-large-mnli'
     model = RobertaForSequenceClassification.from_pretrained(pretrain_model_dir, num_labels=num_labels)
     tokenizer = RobertaTokenizer.from_pretrained(pretrain_model_dir, do_lower_case=args.do_lower_case)
     model.to(device)
@@ -603,12 +604,23 @@ def main():
     train_examples_RTE, dev_examples_RTE = processor.get_RTE_train_and_dev('/export/home/Dataset/glue_data/RTE/train.tsv', '/export/home/Dataset/glue_data/RTE/dev.tsv')
     train_examples_ANLI, dev_examples_ANLI = processor.get_ANLI_train_and_dev('train', 'dev', '/export/home/Dataset/para_entail_datasets/ANLI/anli_v0.1/')
 
-    train_examples = train_examples_ANLI#train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
+    train_examples = train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
     dev_examples_list = [dev_examples_MNLI, dev_examples_SNLI, dev_examples_SciTail, dev_examples_RTE, dev_examples_ANLI]
 
     dev_task_label = [0,0,1,1,0]
     task_names = ['MNLI', 'SNLI', 'SciTail', 'RTE', 'ANLI']
-    '''iter over each dataset'''
+
+
+    '''filter challenging neighbors'''
+    neighbor_id_list = []
+    readfile = codecs.open('neighbors_indices.txt', 'r', 'utf-8')
+    for line in readfile:
+        neighbor_id_list.append(int(line.strip()))
+    readfile.close()
+    print('neighbor_id_list size:', len(neighbor_id_list))
+    truncated_train_examples = [train_examples[i] for i in neighbor_id_list]
+    train_examples = truncated_train_examples
+
 
 
 
@@ -709,13 +721,13 @@ def main():
             global_step += 1
             iter_co+=1
 
-            if iter_co % len(train_dataloader) ==0:
-                # if iter_co % (len(train_dataloader)//5) ==0:
+            # if iter_co % len(train_dataloader) ==0:
+            if iter_co % (len(train_dataloader)//5) ==0:
                 '''
                 start evaluate on  dev set after this epoch
                 '''
-                if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
-                    model = torch.nn.DataParallel(model)
+                # if n_gpu > 1 and not isinstance(model, torch.nn.DataParallel):
+                #     model = torch.nn.DataParallel(model)
                 model.eval()
                 for m in model.modules():
                     if isinstance(m, torch.nn.BatchNorm2d):
@@ -736,12 +748,6 @@ def main():
                     for _, batch in enumerate(valid_dataloader):
                         batch = tuple(t.to(device) for t in batch)
                         input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
-                        # input_ids = input_ids.to(device)
-                        # input_mask = input_mask.to(device)
-                        # segment_ids = segment_ids.to(device)
-                        # label_ids = label_ids.to(device)
-
-
                         if task_label == 0:
                             gold_label_ids+=list(label_ids.detach().cpu().numpy())
                         else:
@@ -753,8 +759,6 @@ def main():
                                     gold_label_ids.append(label_id) #0
                                 else:
                                     gold_label_ids.append(1) #1
-
-
                         with torch.no_grad():
                             logits = model(input_ids=input_ids, attention_mask=input_mask, token_type_ids=None, labels=None)
                         logits = logits[0]
@@ -777,9 +781,6 @@ def main():
                                 pred_label_ids.append(0)
                             else:
                                 pred_label_ids.append(1)
-
-                    # print('gold_label_ids:', sum(gold_label_ids), sum(gold_label_ids)/len(gold_label_ids), gold_label_ids[:20])
-                    # print('pred_label_ids:', sum(pred_label_ids), pred_label_ids[:100])
                     assert len(pred_label_ids) == len(gold_label_ids)
                     hit_co = 0
                     for k in range(len(pred_label_ids)):
@@ -790,10 +791,10 @@ def main():
                     print(task_names[idd], ' dev acc:', test_acc)
 
                 '''store the model, because we can test after a max_dev acc reached'''
-                # model_to_save = (
-                #     model.module if hasattr(model, "module") else model
-                # )  # Take care of distributed/parallel training
-                # store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
+                model_to_save = (
+                    model.module if hasattr(model, "module") else model
+                )  # Take care of distributed/parallel training
+                store_transformers_models(model_to_save, tokenizer, '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/', 'RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_'+str(epoch_i)+'_acc_'+str(dev_acc_sum))
 
 
 
