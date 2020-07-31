@@ -700,6 +700,7 @@ def main():
     neighbor_size = 100
     indice_set = set()
     incorrect_pred_co = 0
+    dev_acc_sum = 0.0
     for idd, valid_dataloader in enumerate(valid_dataloader_list):
         print('extracting....dev of ', task_names[idd])
         dev_reps = []
