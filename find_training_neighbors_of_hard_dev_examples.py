@@ -761,8 +761,13 @@ def main():
                 hit_co +=1
             else:
                 '''incorrect prediction'''
-                dev_rep_i = dev_reps[k:(k+1)].view(-1, 1)
-                similarities = torch.mm(train_reps, dev_rep_i).view(-1) #(1M)
+                dev_rep_i = dev_reps[k:(k+1)]
+                '''dot product'''
+                # similarities = torch.mm(train_reps, dev_rep_i.view(-1, 1)).view(-1) #(1M)
+                '''euclidean distance'''
+                euclidean_distance = torch.norm(train_reps-dev_rep_i, dim=1)#(1M)
+                similarities = 1.0/(1.0+euclidean_distance)
+
                 top_N_indices = torch.topk(similarities, neighbor_size)[1].detach().cpu().numpy().tolist()
                 indice_set = indice_set | set(top_N_indices)
                 incorrect_pred_co+=1
@@ -772,7 +777,7 @@ def main():
         print(task_names[idd], ' dev acc:', test_acc)
 
     print('indice_set size:', len(indice_set))
-    write_neighbor_indices = codecs.open('neighbors_indices_before_dropout.v2.txt', 'w', 'utf-8')
+    write_neighbor_indices = codecs.open('neighbors_indices_before_dropout_eud.v3.txt', 'w', 'utf-8')
     for indice in indice_set:
         write_neighbor_indices.write(str(indice)+'\n')
     write_neighbor_indices.close()
