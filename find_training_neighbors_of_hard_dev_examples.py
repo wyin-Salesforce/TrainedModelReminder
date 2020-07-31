@@ -651,7 +651,7 @@ def main():
     '''note that here we keep the order'''
     train_sampler = SequentialSampler(train_data)
 
-    train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
+    train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.eval_batch_size)
 
     '''dev data to features'''
     valid_dataloader_list = []
@@ -685,7 +685,8 @@ def main():
     model.eval()
     '''first extract reps for training examples'''
     train_reps = []
-    for _, batch in enumerate(train_dataloader):
+    for _, batch in enumerate(tqdm(train_dataloader, desc="Training")):
+        # for _, batch in enumerate(train_dataloader):
         batch = tuple(t.to(device) for t in batch)
         input_ids, input_mask, segment_ids, label_ids, task_label_ids = batch
 
@@ -700,6 +701,7 @@ def main():
     indice_set = set()
     incorrect_pred_co = 0
     for idd, valid_dataloader in enumerate(valid_dataloader_list):
+        print('extracting....dev of ', task_names[idd])
         dev_reps = []
         task_label = dev_task_label[idd]
         eval_loss = 0
