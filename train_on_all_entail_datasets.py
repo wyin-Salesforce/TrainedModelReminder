@@ -613,7 +613,7 @@ def main():
 
     '''filter challenging neighbors'''
     neighbor_id_list = []
-    readfile = codecs.open('neighbors_indices_before_dropout.v2.txt', 'r', 'utf-8')
+    readfile = codecs.open('neighbors_indices_before_dropout_eud.v3.txt', 'r', 'utf-8')
     for line in readfile:
         neighbor_id_list.append(int(line.strip()))
     readfile.close()
