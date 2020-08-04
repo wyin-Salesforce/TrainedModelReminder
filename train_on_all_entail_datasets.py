@@ -810,4 +810,14 @@ if __name__ == "__main__":
 note:
 RTE--> MNLI, SNLI, SciTail, RTE, ANLI
 remove special token, using roberta-large, check after each epoch
+
+RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_74_acc_4.1927169133373905
+RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_52_acc_4.195574264788893
+RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_51_acc_4.199802825942953
+MNLI  dev acc: 0.9011391375101708
+SNLI  dev acc: 0.9285714285714286
+SciTail  dev acc: 0.9631901840490797
+RTE  dev acc: 0.9025270758122743
+ANLI  dev acc: 0.504375
+
 '''
