@@ -491,9 +491,9 @@ def main():
     tokenizer = RobertaTokenizer.from_pretrained(pretrain_model_dir, do_lower_case=args.do_lower_case)
 
     '''update the roberta parameters by my 3-way model'''
-    # model_roberta = RobertaForSequenceClassification.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_51_acc_4.199802825942953', num_labels=3)
+    model_roberta = RobertaForSequenceClassification.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_51_acc_4.199802825942953', num_labels=3)
     # # model_roberta = RobertaForSequenceClassification.from_pretrained('roberta-large-mnli', num_labels=3)
-    # model.roberta.load_state_dict(model_roberta.roberta.state_dict())
+    model.roberta.load_state_dict(model_roberta.roberta.state_dict())
 
 
     model.to(device)
@@ -702,7 +702,7 @@ if __name__ == "__main__":
     main()
 
 '''
- CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_MRPC.py --task_name rte --do_lower_case --learning_rate 2e-6 --num_train_epochs 10 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
+ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_MRPC.py --task_name rte --do_lower_case --learning_rate 2e-6 --num_train_epochs 10 --per_gpu_train_batch_size 16 --per_gpu_eval_batch_size 64
 
 
 
