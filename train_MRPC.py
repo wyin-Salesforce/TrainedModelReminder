@@ -489,6 +489,13 @@ def main():
     # pretrain_model_dir = '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_2_acc_4.156359461121103' #'roberta-large' , 'roberta-large-mnli'
     model = RobertaForSequenceClassification.from_pretrained(pretrain_model_dir, num_labels=num_labels)
     tokenizer = RobertaTokenizer.from_pretrained(pretrain_model_dir, do_lower_case=args.do_lower_case)
+
+    '''update the roberta parameters by my 3-way model'''
+    # model_roberta = RobertaForSequenceClassification.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_51_acc_4.199802825942953', num_labels=3)
+    # # model_roberta = RobertaForSequenceClassification.from_pretrained('roberta-large-mnli', num_labels=3)
+    # model.roberta.load_state_dict(model_roberta.roberta.state_dict())
+
+
     model.to(device)
 
 
@@ -673,18 +680,18 @@ def main():
                             max_dev_f1 = f1
                             if test_acc > max_dev_acc:
                                 max_dev_acc = test_acc
-                            print('current dev f1:', f1, ' acc:', test_acc, ' max dev f1:', max_dev_f1, 'max_dev_acc:', max_dev_acc)
+                            print('\ncurrent dev f1:', f1, ' acc:', test_acc, ' max dev f1:', max_dev_f1, 'max_dev_acc:', max_dev_acc)
                         else:
-                            print('current dev f1:', f1, ' acc:', test_acc, ' max dev f1:', max_dev_f1, 'max_dev_acc:', max_dev_acc)
+                            print('\ncurrent dev f1:', f1, ' acc:', test_acc, ' max dev f1:', max_dev_f1, 'max_dev_acc:', max_dev_acc)
                             break
                     else: # test
                         if f1>max_test_f1:
                             max_test_f1 = f1
                             if test_acc > max_test_acc:
                                 max_test_acc = test_acc
-                            print('current test f1:', f1, ' acc:', test_acc, ' max test f1:', max_test_f1, 'max_test_acc:', max_test_acc)
+                            print('\ncurrent test f1:', f1, ' acc:', test_acc, ' max test f1:', max_test_f1, 'max_test_acc:', max_test_acc)
                         else:
-                            print('current test f1:', f1, ' acc:', test_acc, ' max test f1:', max_test_f1, 'max_test_acc:', max_test_acc)
+                            print('\ncurrent test f1:', f1, ' acc:', test_acc, ' max test f1:', max_test_f1, 'max_test_acc:', max_test_acc)
 
 
 
@@ -695,19 +702,8 @@ if __name__ == "__main__":
     main()
 
 '''
- CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_MRPC.py --task_name rte --do_lower_case --learning_rate 2e-6 --num_train_epochs 100 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
+ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_MRPC.py --task_name rte --do_lower_case --learning_rate 2e-6 --num_train_epochs 10 --per_gpu_train_batch_size 32 --per_gpu_eval_batch_size 64
 
-note:
-RTE--> MNLI, SNLI, SciTail, RTE, ANLI
-remove special token, using roberta-large, check after each epoch
 
-RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_74_acc_4.1927169133373905
-RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_52_acc_4.195574264788893
-RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_51_acc_4.199802825942953
-MNLI  dev acc: 0.9011391375101708
-SNLI  dev acc: 0.9285714285714286
-SciTail  dev acc: 0.9631901840490797
-RTE  dev acc: 0.9025270758122743
-ANLI  dev acc: 0.504375
 
 '''
