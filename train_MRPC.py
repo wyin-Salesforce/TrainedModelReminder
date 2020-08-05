@@ -151,6 +151,10 @@ class RteProcessor(DataProcessor):
                 if line_co>0:
                     parts = line.strip().split('\t')
                     label = int(parts[0])
+                    if label != 0 and label !=1:
+                        print('label:', label)
+                        print('line:', line)
+                        exit(0)
                     sent1 = parts[-2].strip()
                     sent2 = parts[-1].strip()
                     examples.append(
