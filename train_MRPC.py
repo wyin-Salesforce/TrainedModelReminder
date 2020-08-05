@@ -116,7 +116,7 @@ class RteProcessor(DataProcessor):
     def prepare_MRPC_labeled_set(self):
         '''first load the fully labeled training/test sets'''
         filenames = ['msr_paraphrase_train.txt', 'msr_paraphrase_test.txt']
-        idpair_2_label = []
+        idpair_2_label = {}
         for filename in filenames:
             line_co = 0
             readfile = codecs.open('/export/home/Dataset/glue_data/MRPC/standardfrominternet/'+filename, 'r', 'utf-8')
