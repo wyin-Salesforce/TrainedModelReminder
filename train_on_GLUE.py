@@ -285,4 +285,8 @@ roberta-large-pretrain_on-all_entail:
 WNLI:
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -u train_on_GLUE.py --model_name_or_path roberta-large --task_name WNLI --do_train --do_eval --data_dir /export/home/Dataset/glue_data/WNLI/  --max_seq_length 128  --per_device_train_batch_size 8  --learning_rate 2e-5  --num_train_epochs 300.0  --output_dir MRPC_output/ --overwrite_output_dir
 
+
+score_vec = (0.5 - scores_pos + scores_neg).view(1, batch_size)
+zero_vec = torch.zeros_like(score_vec)
+concate = torch.cat([score_vec, zero_vec], dim=0)
 '''
