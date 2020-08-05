@@ -426,8 +426,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
                 InputFeatures(input_ids=input_ids,
                               input_mask=input_mask,
                               segment_ids=segment_ids,
-                              label_id=label_id,
-                              task_label = example.task_label))
+                              label_id=label_id))
     return features
 
 def _truncate_seq_pair(tokens_a, tokens_b, max_length):
