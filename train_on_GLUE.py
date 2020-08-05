@@ -135,9 +135,9 @@ def main():
         cache_dir=model_args.cache_dir,
     )
     '''update the roberta parameters by my 3-way model'''
-    model_roberta = RobertaForSequenceClassification.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_51_acc_4.199802825942953', num_labels=3)
+    # model_roberta = RobertaForSequenceClassification.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_51_acc_4.199802825942953', num_labels=3)
     # model_roberta = RobertaForSequenceClassification.from_pretrained('roberta-large-mnli', num_labels=3)
-    model.roberta.load_state_dict(model_roberta.roberta.state_dict())
+    # model.roberta.load_state_dict(model_roberta.roberta.state_dict())
 
 
     # Get datasets
@@ -254,9 +254,9 @@ if __name__ == "__main__":
 
 
 '''
-CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch  --nproc_per_node 8 train_on_GLUE.py --model_name_or_path roberta-large --task_name MRPC --do_train --do_eval --data_dir /export/home/Dataset/glue_data/MRPC/  --max_seq_length 128  --per_device_train_batch_size 8  --learning_rate 2e-5  --num_train_epochs 3.0  --output_dir MRPC_output/
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch  --nproc_per_node 8 train_on_GLUE.py --model_name_or_path roberta-large --task_name MRPC --do_train --do_eval --data_dir /export/home/Dataset/glue_data/MRPC/  --max_seq_length 128  --per_device_train_batch_size 8  --learning_rate 2e-5  --num_train_epochs 3.0  --output_dir MRPC_output/ --overwrite_output_dir
 
-CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch  --nproc_per_node 8 train_on_GLUE.py --model_name_or_path /export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_51_acc_4.199802825942953 --task_name MRPC --do_train --do_eval --data_dir /export/home/Dataset/glue_data/MRPC/  --max_seq_length 128  --per_device_train_batch_size 8  --learning_rate 2e-5  --num_train_epochs 3.0  --output_dir MRPC_output/ --overwrite_output_dir
+# CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch  --nproc_per_node 8 train_on_GLUE.py --model_name_or_path /export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_51_acc_4.199802825942953 --task_name MRPC --do_train --do_eval --data_dir /export/home/Dataset/glue_data/MRPC/  --max_seq_length 128  --per_device_train_batch_size 8  --learning_rate 2e-5  --num_train_epochs 3.0  --output_dir MRPC_output/ --overwrite_output_dir
 
 roberta-large old:
 07/27/2020 16:57:48 - INFO - __main__ -   ***** Eval results mrpc *****
