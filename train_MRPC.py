@@ -485,7 +485,7 @@ def main():
 
 
     num_labels = len(label_list)
-    pretrain_model_dir = 'roberta-base' #'roberta-large' , 'roberta-large-mnli'
+    pretrain_model_dir = 'roberta-large' #'roberta-large' , 'roberta-large-mnli'
     # pretrain_model_dir = '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_2_acc_4.156359461121103' #'roberta-large' , 'roberta-large-mnli'
     model = RobertaForSequenceClassification.from_pretrained(pretrain_model_dir, num_labels=num_labels)
     tokenizer = RobertaTokenizer.from_pretrained(pretrain_model_dir, do_lower_case=args.do_lower_case)
@@ -702,7 +702,7 @@ if __name__ == "__main__":
     main()
 
 '''
- CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_MRPC.py --task_name rte --do_lower_case --learning_rate 2e-5 --num_train_epochs 10 --per_gpu_train_batch_size 16 --per_gpu_eval_batch_size 64
+ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 python -u train_MRPC.py --task_name rte --do_lower_case --learning_rate 2e-5 --num_train_epochs 10 --per_gpu_train_batch_size 16 --per_gpu_eval_batch_size 64 --seed 16
 
 
 
