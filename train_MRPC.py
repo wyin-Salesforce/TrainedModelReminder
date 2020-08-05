@@ -485,15 +485,15 @@ def main():
 
 
     num_labels = len(label_list)
-    pretrain_model_dir = 'roberta-large' #'roberta-large' , 'roberta-large-mnli'
+    pretrain_model_dir = 'roberta-base' #'roberta-large' , 'roberta-large-mnli'
     # pretrain_model_dir = '/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_epoch_2_acc_4.156359461121103' #'roberta-large' , 'roberta-large-mnli'
     model = RobertaForSequenceClassification.from_pretrained(pretrain_model_dir, num_labels=num_labels)
     tokenizer = RobertaTokenizer.from_pretrained(pretrain_model_dir, do_lower_case=args.do_lower_case)
 
     '''update the roberta parameters by my 3-way model'''
     # model_roberta = RobertaForSequenceClassification.from_pretrained('/export/home/Dataset/BERT_pretrained_mine/TrainedModelReminder/RoBERTa_on_MNLI_SNLI_SciTail_RTE_ANLI_SpecialToken_Filter_1_epoch_51_acc_4.199802825942953', num_labels=3)
-    model_roberta = RobertaForSequenceClassification.from_pretrained('roberta-large-mnli', num_labels=3)
-    model.roberta.load_state_dict(model_roberta.roberta.state_dict())
+    # model_roberta = RobertaForSequenceClassification.from_pretrained('roberta-large-mnli', num_labels=3)
+    # model.roberta.load_state_dict(model_roberta.roberta.state_dict())
 
 
     model.to(device)
