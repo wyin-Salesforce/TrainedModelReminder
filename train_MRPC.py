@@ -113,32 +113,47 @@ class DataProcessor(object):
 
 class RteProcessor(DataProcessor):
     """Processor for the RTE data set (GLUE version)."""
-    def get_MNLI_train_and_dev(self, train_filename, dev_filename):
-        '''
-        classes: ["entailment", "neutral", "contradiction"]
-        '''
-        examples_per_file = []
-        for filename in [train_filename, dev_filename]:
-            examples=[]
-            readfile = codecs.open(filename, 'r', 'utf-8')
-            line_co=0
-            for row in readfile:
-                if line_co>0:
-                    line=row.strip().split('\t')
-                    guid = "train-"+str(line_co-1)
-                    # text_a = 'MNLI. '+line[8].strip()
-                    text_a = line[8].strip()
-                    text_b = line[9].strip()
-                    label = line[-1].strip() #["entailment", "neutral", "contradiction"]
-                    examples.append(
-                        InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label, task_label=0))
+    def prepare_MRPC_labeled_set(self):
+        '''first load the fully labeled training/test sets'''
+        filenames = ['msr_paraphrase_train.txt', 'msr_paraphrase_test.txt']
+        idpair_2_label = []
+        for filename in filenames:
+            line_co = 0
+            readfile = codecs.open('/export/home/Dataset/glue_data/MRPC/standardfrominternet/'+filename, 'r', 'utf-8')
+            for line in readfile:
+                if line_co > 0:
+                    parts = line.strip().split('\t')
+                    idpair = (parts[1], parts[2])
+                    label = parts[0]
+                    idpair_2_label[idpair] = label
                 line_co+=1
-                # if line_co > 20000:
-                #     break
             readfile.close()
-            print('loaded  MNLI size:', len(examples))
-            examples_per_file.append(examples)
-        return examples_per_file[0], examples_per_file[1] #train, dev
+
+        '''rewrite the test set in glue benchmark'''
+        readfile = codecs.open('/export/home/Dataset/glue_data/MRPC/test.tsv', 'r', 'utf-8')
+        writefile = codecs.open('/export/home/Dataset/glue_data/MRPC/test.labeled.tsv', 'w', 'utf-8')
+        line_co=0
+        unvalid=0
+        for line in readfile:
+            if line_co>0:
+                parts = line.strip().split('\t')
+                idpair = (parts[1], parts[2])
+                label = idpair_2_label.get(idpair)
+                if label is None:
+                    unvalid+=1
+                else:
+                    writefile.write('\t'.join([label]+parts[1:])+'\n')
+            else:
+                writefile.write(line.strip()+'\n')
+
+            line_co+=1
+
+        writefile.close()
+        readfile.close()
+        print('unvalid size:', unvalid)
+
+
+
 
     def get_MRPC(self, folder):
         filenames = ['train.tsv', 'dev.tsv', 'test.tsv']
@@ -166,127 +181,6 @@ class RteProcessor(DataProcessor):
         return examples_list
 
 
-
-
-
-
-    def get_SNLI_train_and_dev(self, train_filename, dev_filename):
-        '''
-        classes: ["entailment", "neutral", "contradiction"]
-        '''
-
-        examples_per_file = []
-        for filename in [train_filename, dev_filename]:
-            examples=[]
-            readfile = codecs.open(filename, 'r', 'utf-8')
-            line_co=0
-            for row in readfile:
-                if line_co>0:
-                    line=row.strip().split('\t')
-                    guid = "train-"+str(line_co-1)
-                    # text_a = 'SNLI. '+line[7].strip()
-                    text_a = line[7].strip()
-                    text_b = line[8].strip()
-                    label = line[-1].strip() #["entailment", "neutral", "contradiction"]
-                    examples.append(
-                        InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label, task_label=0))
-                line_co+=1
-                # if line_co > 20000:
-                #     break
-            readfile.close()
-            print('loaded  SNLI size:', len(examples))
-            examples_per_file.append(examples)
-        return examples_per_file[0], examples_per_file[1] #train, dev
-
-    def get_SciTail_train_and_dev(self, train_filename, dev_filename):
-        '''
-        classes: entails, neutral
-        '''
-        examples_per_file = []
-        for filename in [train_filename, dev_filename]:
-            examples=[]
-            readfile = codecs.open(filename, 'r', 'utf-8')
-            line_co=0
-            for row in readfile:
-
-                line=row.strip().split('\t')
-                if len(line) == 3:
-                    guid = "train-"+str(line_co-1)
-                    # text_a = 'SciTail. '+line[0].strip()
-                    text_a = line[0].strip()
-                    text_b = line[1].strip()
-                    label = line[2].strip()
-                    if label == 'entails':
-                        examples.append(
-                            InputExample(guid=guid, text_a=text_a, text_b=text_b, label='entailment', task_label=0))
-                    else:
-                        examples.append(
-                            InputExample(guid=guid, text_a=text_a, text_b=text_b, label='entailment', task_label=1))
-
-            readfile.close()
-            print('loaded  SciTail size:', len(examples))
-            examples_per_file.append(examples)
-        return examples_per_file[0], examples_per_file[1] #train, dev
-
-    def get_RTE_train_and_dev(self, train_filename, dev_filename):
-        '''
-        classes: entailment, not_entailment
-        '''
-        examples_per_file = []
-        for filename in [train_filename, dev_filename]:
-            examples=[]
-            readfile = codecs.open(filename, 'r', 'utf-8')
-            line_co=0
-            for row in readfile:
-                if line_co>0:
-                    line=row.strip().split('\t')
-                    guid = "dev-"+str(line_co-1)
-                    # text_a = 'RTE. '+line[1].strip()
-                    text_a = line[1].strip()
-                    text_b = line[2].strip()
-                    label = line[3].strip() #["entailment", "not_entailment"]
-                    if label == 'entailment':
-                        examples.append(
-                            InputExample(guid=guid, text_a=text_a, text_b=text_b, label='entailment', task_label = 0))
-                    else:
-                        examples.append(
-                            InputExample(guid=guid, text_a=text_a, text_b=text_b, label='entailment', task_label = 1))
-                line_co+=1
-            readfile.close()
-            print('loaded  RTE size:', len(examples))
-            examples_per_file.append(examples)
-        return examples_per_file[0], examples_per_file[1] #train, dev
-
-    def get_ANLI_train_and_dev(self, train_prefix, dev_prefix, path):
-        #path = /export/home/Dataset/para_entail_datasets/ANLI/anli_v0.1
-        folders = ['R1', 'R2', 'R3']
-        label2label = {'e': 'entailment', 'n': 'neutral', 'c': 'contradiction'}
-
-        examples_per_file = []
-        for prefix in [train_prefix, dev_prefix]:
-            examples = []
-            guid_id = 0
-            # labeltype_set = set()
-
-            for folder in folders:
-                filename = path+folder+'/'+prefix+'.jsonl'
-                # print('loading ANLI...', filename)
-                with open(filename, 'r') as f:
-                    for line in json_lines.reader(f):
-                        guid_id+=1
-                        # premise = 'ANLI. '+line.get('context')
-                        premise = line.get('context')
-                        hypothesis = line.get('hypothesis')
-
-                        # label = 'entailment' if line.get('label') == 'e' else 'not_entailment'
-                        label = label2label.get(line.get('label').strip())
-                        # labeltype_set.add(line.get('label'))
-                        if len(premise) == 0 or len(hypothesis)==0:
-                            continue
-                        examples.append(InputExample(guid=str(guid_id), text_a=premise, text_b=hypothesis, label=label, task_label = 0))
-            print(prefix, ' ANLI size:', len(examples))
-            examples_per_file.append(examples)
-        return examples_per_file[0], examples_per_file[1] #train, dev
 
 
     def get_labels(self):
@@ -630,6 +524,8 @@ def main():
     # train_examples_SciTail, dev_examples_SciTail = processor.get_SciTail_train_and_dev('/export/home/Dataset/SciTailV1/tsv_format/scitail_1.0_train.tsv', '/export/home/Dataset/SciTailV1/tsv_format/scitail_1.0_dev.tsv')
     # train_examples_RTE, dev_examples_RTE = processor.get_RTE_train_and_dev('/export/home/Dataset/glue_data/RTE/train.tsv', '/export/home/Dataset/glue_data/RTE/dev.tsv')
     # train_examples_ANLI, dev_examples_ANLI = processor.get_ANLI_train_and_dev('train', 'dev', '/export/home/Dataset/para_entail_datasets/ANLI/anli_v0.1/')
+    processor.prepare_MRPC_labeled_set()
+    exit(0)
     train_examples, dev_examples, test_examples  = processor.get_MRPC('/export/home/Dataset/glue_data/MRPC/')
     # train_examples = train_examples_MNLI+train_examples_SNLI+train_examples_SciTail+train_examples_RTE+train_examples_ANLI
     dev_examples_list = [dev_examples, test_examples]
